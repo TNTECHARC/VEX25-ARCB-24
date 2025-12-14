@@ -146,15 +146,19 @@ void autonomous()
   rotation1.resetPosition();
   rotation2.resetPosition();
   inertial1.resetHeading();
+  
   wait(100, msec);
 
   setDriveTrainConstants();
 
 
-  // Auton_1();
-  Auton_2();
+  Auton_1();
+  //Auton_2();
   //Auton_3();
   //Auton_4();
+  //Auton_5();
+  //Auton_6();
+  //Auton_7();
 
   // while(1){
   //   chassis.setPosition(0,0,0);
@@ -345,15 +349,15 @@ void setDriveTrainConstants()
         1.7, // Kd - Derivative Constant
         1.00, // Settle Error
         200, // Time to Settle
-        3000 // End Time 5000
+        2500 // End Time 5000
     );  
 
     // Set the Turn PID values for the DriveTrain
     chassis.setTurnConstants(
         0.25,    // Kp - Proportion Constant
         0.000,      // Ki - Integral Constant
-        1.4,      // Kd - Derivative Constant 
-        2.0,    // Settle Error
+        1.4,      // Kd - Derivative Constant 1.4
+        2,    // Settle Error
         200,    // Time to Settle
         1000    // End Time
     );
@@ -392,100 +396,206 @@ void Auton_1()
     //First T
       mainIntake.spin(fwd);
       colorSort.spin(fwd);
-      topStage.spin(fwd);
-    chassis.driveDistanceWithOdom(56); //50 to short, 56 hits wall every 3 times or so
+      topStage.spin(fwd, 50, percent);
+    chassis.driveDistanceWithOdom(47); //50 hits wall
     wait(0.5, sec);
     matchLoad.set(true);
       //wait(0.2, sec); 
     //Goes for matchload
-    chassis.driveDistanceWithOdom(-14); //13
-    toggleLift();
+    chassis.driveDistanceWithOdom(-15); //13
+    // toggleLift();
+    // toggleDropDown();
+    // wait(0.5, sec);
+    // toggleDropDown();
+    // wait(0.5, sec);
+    // toggleLift();
     // matchLoad.set(false);
     chassis.turnToAngle(270);
+    //toggleLift();
+    toggleLift();
     matchLoad.set(false);
-    chassis.driveDistanceWithOdom(12); //1.5 worked before
+
+    chassis.driveDistanceWithOdomTime(11.5, 1000); //11.5 mostly working, 11 was sometime too short
+    wait(0.4, sec);
+    topStage.stop();
+    toggleLift();
     matchLoad.set(true);
-      wait(1.7, sec);
-      mainIntake.stop();
+      wait(2, sec); //1.7 not alsways enough
+      //mainIntake.stop();
       colorSort.stop();
-      topStage.stop();
-      matchLoad.set(false);    
+      //topStage.stop();
+      //matchLoad.set(false);    
     chassis.driveDistanceWithOdom(-14); //was -13.5
-    chassis.turnToAngle(90);
-    chassis.driveDistanceWithOdom(16.5);
-    //Load long with 8
-      toggleIntakeFlap();
-      wait(0.05, sec);
-      topStage.spin(reverse);
-      wait(0.1, sec);
-      mainIntake.spin(fwd);
+    chassis.turnToAngle(88); //90
+    toggleLift(); //up
+    matchLoad.set(false);
+    //chassis.driveDistanceWithOdomTime(13.5, 1000, 4);
+    chassis.driveDistanceWithOdomTime(11, 1000); //16 it alligns but to rough (goes with 4), 13 hits
+    toggleIntakeFlap();
       colorSort.spin(fwd);
-      topStage.spin(fwd);
-      wait(1.7, sec);
+      topStage.spin(fwd, 100, percent);
+    chassis.driveDistanceWithOdomTime(6, 1000); //4 it alligns but to rough (goes with 16)
+    //Load long with 8
+      //toggleIntakeFlap();
+      //wait(0.05, sec);
+        // topStage.spin(reverse);
+        // wait(0.1, sec);
+      //mainIntake.spin(fwd);
+        // colorSort.spin(fwd);
+        // topStage.spin(fwd);
+      wait(1.9, sec);
       mainIntake.stop();
       colorSort.stop();
       topStage.stop();
 
-    chassis.driveDistanceWithOdom(-8.5);
-    toggleIntakeFlap(); // down
-    chassis.turnToAngle(45);
-    chassis.driveDistanceWithOdom(17);
+          chassis.driveDistanceWithOdom(-8.5);
+          toggleIntakeFlap(); // down
+          chassis.turnToAngle(45);
+          chassis.driveDistanceWithOdom(17); //17 may need to time out
+          chassis.turnToAngle(87); // 90 makes it hit balls
+          chassis.driveDistanceWithOdom(33);//32
+          //Grabs 2 from bellow
+          chassis.turnToAngle(180);
+          chassis.driveDistanceWithOdomTime(5, 1000);
+          //Drop Down bar
+          toggleDropDown();
+          wait(0.3, sec);
+          matchLoad.set(true);
+          chassis.driveDistanceWithOdomTime(-5, 1000);
+    // //GRAB 2 Blue FROM CENTER UNDER GOAL
+    // chassis.driveDistanceWithOdomTime(-10, 1000);
+    // toggleIntakeFlap();
+    // chassis.turnToAngle(0);
+    // chassis.driveDistanceWithOdom(14); // 18
+    // chassis.turnToAngle(90);
+    // chassis.driveDistanceWithOdom(46); //49
+    // chassis.turnToAngle(180);
+    // chassis.driveDistanceWithOdomTime(5, 1000);
+    // toggleDropDown(); // down
+    // wait(1,sec);
+    // matchLoad.set(true);
+    // mainIntake.spin(forward);
+    // colorSort.spin(forward);
+    // topStage.spin(forward);
+
+    // chassis.driveDistanceWithOdom(-5);
+
+
+
+
+
+    toggleDropDown(); // up
     chassis.turnToAngle(90);
-    chassis.driveDistanceWithOdom(32);
-    //Grabs 2 from bellow
-    chassis.turnToAngle(180);
-    //Drop Down bar
-    wait(1, sec);
-    chassis.turnToAngle(90);
+    toggleLift(); // down
       mainIntake.spin(fwd);
       colorSort.spin(fwd);
       topStage.spin(fwd);
+      //matchLoad.set(true);
+      // toggleDropDown(); // up
     chassis.driveDistanceWithOdom(28);
+      // toggleDropDown(); // up
       mainIntake.stop();
       colorSort.stop();
       topStage.stop();
+      matchLoad.set(false);
+
 
     // getting 3 blue and 3 red from wall intake
+    toggleLift(); // up
     chassis.turnToAngle(130); //123
-    chassis.driveDistanceWithOdom(22); //24 overshoots
+    chassis.driveDistanceWithOdom(21.5); //22.5 overshoots, 21.3 slightly to far, 20.8 just not far enough, 21 undered
     chassis.turnToAngle(90);
     mainIntake.spin(forward);
     colorSort.spin(forward);
     topStage.spin(forward);
-    chassis.driveDistanceWithOdom(14); //5 unders
+    chassis.driveDistanceWithOdomTime(9, 1000); //10, 9.5 may be pushing it to far
+    toggleLift(); // down
     matchLoad.set(true);
-    wait(1.7, sec);
-    mainIntake.stop();
+    wait(2, sec); //1.7 not enough
+    //mainIntake.stop();
     colorSort.stop();
     topStage.stop();
     matchLoad.set(false);
 
     // scoring 5 blue and 2 red
-    chassis.driveDistanceWithOdom(-4);
-    chassis.turnToAngle(270); //WRONG ANGLE
+    toggleLift(); // up
+    chassis.driveDistanceWithOdomTime(-4, 1500);
+    chassis.turnToAngle(270);
+    //toggleIntakeFlap();
+    //chassis.driveDistanceWithOdomTime(24, 1000); //25 slams
+    
+
+    chassis.driveDistanceWithOdomTime(22, 1000); //16 it alligns but to rough (goes with 4), 20 not far enough
     toggleIntakeFlap();
-    chassis.driveDistanceWithOdom(30);
-    topStage.spin(reverse);
-    wait(0.2, sec);
-    topStage.spin(forward);
+      colorSort.spin(fwd);
+      topStage.spin(fwd, 20, percent);
+    chassis.driveDistanceWithOdomTime(5, 1000); //4
+
+
+    // topStage.spin(reverse);
+    // wait(0.1, sec);
+    topStage.spin(forward, 100, percent);
     colorSort.spin(forward);
     mainIntake.spin(forward);
-    wait(1.7, sec);
-
+    wait(1.7, sec); //It needs to keep the last ball
+    toggleIntakeFlap();
   
 
 
     //goes for wall balls
-    chassis.driveDistanceWithOdom(-15); //-17 perfectly aligns
-    toggleIntakeFlap();
+    chassis.driveDistanceWithOdom(-15.5); //-15
     chassis.turnToAngle(0);
-    chassis.driveDistanceWithOdom(13); //may be to close
-    chassis.driveDistanceWithOdom(-2);
+    chassis.driveDistanceWithOdomTime(15, 1000); //13 too far
+    //wait(0.3, sec);
     matchLoad.set(true);
-    chassis.turnToAngle(5);
-    matchLoad.set(false);
-    chassis.driveDistanceWithOdom(-62);
+    chassis.driveDistanceWithOdomTime(-5, 1000);
+    chassis.turnToAngleTime(5, 1000, 8);
+    chassis.driveDistanceWithOdom(-57); //-56
+    //matchLoad.set(false);
     chassis.turnToAngle(90);
+    matchLoad.set(false);
+
+
+    //out of park zone
+    chassis.driveDistanceWithOdomTime(7, 1000); //7.5
+    //drop down bar
+    toggleDropDown(); //down
+    wait(1, sec);
+    chassis.driveDistanceWithOdomTime(-7, 1000); //-7.5
+    matchLoad.set(true);
+    chassis.turnToAngle(315);
+    mainIntake.spin(forward);
+    colorSort.spin(forward);
+    topStage.spin(forward);
+    chassis.driveDistanceWithOdom(27);  //23 not far enough  28 too far
+    matchLoad.set(false);
+    toggleDropDown(); // up
+    mainIntake.stop();
+    colorSort.stop();
+    topStage.stop();
+
+
+    //Into bottom goal
+    chassis.turnToAngle(225);
+    chassis.driveDistanceWithOdomTime(10, 1000); //10
+    //load into bottom goal
+    toggleLift(); // down
+    justIntake.spin(reverse, 25, percent);
+    bottomStage.spin(reverse, 80, percent);
+    colorSort.spin(fwd, 10, percent);
+    topStage.spin(reverse, 100, percent);
+    wait(4, sec);
+    justIntake.stop();
+    bottomStage.stop();
+    colorSort.stop();
+    topStage.stop();
+
+    chassis.driveDistanceWithOdom(-10);
+    chassis.turnToAngle(285);
+    chassis.driveDistanceWithOdom(70); //79
+
+
+
 
 
 
@@ -640,7 +750,7 @@ void Auton_2()
     chassis.turnToAngle(90);
     chassis.driveDistanceWithOdom(46); //49
     chassis.turnToAngle(180);
-    chassis.driveDistanceWithOdom(5);
+    chassis.driveDistanceWithOdomTime(5, 1000);
     toggleDropDown(); // down
     wait(1,sec);
     matchLoad.set(true);
@@ -924,18 +1034,47 @@ void Auton_4()
 void Auton_5()
 {
     Brain.Screen.print("Auton 5 running.");
+    toggleDropDown();
 }
 
 /// @brief Auton Slot 6 - Write code for route within this function.
 void Auton_6()
 {
     Brain.Screen.print("Auton 6 running.");
+
+    bottomStage.spin(fwd);
+    wait(1, sec);
+    bottomStage.stop();
+    wait(0.5, sec);
+
+    bottomStage.spin(fwd);
+    wait(1, sec);
+    bottomStage.stop();
+    wait(0.5, sec);
+
+    bottomStage.spin(fwd);
+    wait(1, sec);
+    bottomStage.stop();
+    wait(0.5, sec);
+
+    bottomStage.spin(fwd);
+    wait(1, sec);
+    bottomStage.stop();
+    wait(0.5, sec);
+
+
 }
 
 /// @brief Auton Slot 7 - Write code for route within this function.
 void Auton_7()
 {
     Brain.Screen.print("Auton 7 running.");
+    toggleLift();
+    toggleDropDown();
+    wait(1, sec);
+    chassis.driveDistanceWithOdom(-10);
+    matchLoad.set(true);
+    
 }
 
 /// @brief Auton Slot 8 - Write code for route within this function.

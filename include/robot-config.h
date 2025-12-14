@@ -34,6 +34,7 @@ extern motor bottomStage;
 extern motor topStage;
 
 extern motor_group mainIntake;
+extern motor_group justIntake;
 
 
 extern digital_out matchLoad;
