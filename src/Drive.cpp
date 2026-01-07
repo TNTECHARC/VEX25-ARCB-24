@@ -743,4 +743,216 @@ void Drive::purePursuitToPoint(float desX, float desY){
     updatePosition();
 }
 
+void Drive::movetopos(float x, float y, float angle) {
+    // ===== LemLib-style behavior knobs =====
+    const float lead = 0.4f;                // carrot lead factor
+    const float close_range = 7.5f;         // inches: when we enter "close/settle" mode (LemLib default-ish)
+    const float early_exit_range = 0.0f;    // inches: set >0 if you want earlier exit past target line
 
+    // Speed/limits
+    const float max_drive = driveMaxVoltage;   // volts
+    const float max_turn  = turnMaxVoltage;    // volts
+    const float dt_ms = 10.0f;
+
+    // Exit conditions (use your constants)
+    const float settle_dist = driveSettleError;   // inches
+    const float settle_ang  = turnSettleError;    // degrees
+    const int   settle_time = driveTimeToSettle;  // ms
+    const int   timeout_ms  = driveEndTime;       // ms
+
+    // PIDs (use your tuned values)
+    PID drivePID(0.9, 0.0, 2.0, settle_dist, settle_time, timeout_ms);
+    PID headingPID(0.3, 0.0, 1.4, settle_ang,  settle_time, timeout_ms);
+
+    // Persistent loop variables (like LemLib)
+    bool close = false;
+    bool prevSameSide = false;
+    int elapsed_ms = 0;
+    int settled_ms = 0;
+
+    auto sgn = [](float v) -> float { return (v >= 0.0f) ? 1.0f : -1.0f; };
+
+    // IMPORTANT: manual settle + timeout (matches LemLib intent)
+    while (elapsed_ms < timeout_ms) {
+        updatePosition();
+
+        const float robotX = chassisOdometry.getXPosition();
+        const float robotY = chassisOdometry.getYPosition();
+        const float robotH = chassisOdometry.getHeading(); // deg
+
+        // Distance to target (true lateral error)
+        const float dx = x - robotX;
+        const float dy = y - robotY;
+        const float dist_to_target = hypot(dx, dy);
+
+        // Enter close mode once (never leave)
+        if (!close && dist_to_target < close_range) {
+            close = true;
+        }
+
+        // Carrot point: when close, carrot = target
+        float carrotX = x;
+        float carrotY = y;
+        if (!close) {
+            const float carrot_dist = lead * dist_to_target;
+            carrotX = x - sin(degToRad(angle)) * carrot_dist;
+            carrotY = y - cos(degToRad(angle)) * carrot_dist;
+        }
+
+        // Angle to carrot (your 0°=+Y convention)
+        const float cdx = carrotX - robotX;
+        const float cdy = carrotY - robotY;
+        const float carrot_heading = atan2(cdx, cdy) * 180.0f / (float)M_PI;
+
+        // Travel heading error (toward carrot) and final heading error (pose)
+        const float travel_err = inTermsOfNegative180To180(carrot_heading - robotH);
+        const float final_err  = inTermsOfNegative180To180(angle - robotH);
+
+        // LemLib-style errors:
+        // lateralError: use distance-to-target, but apply sign/cos scaling based on travel direction
+        const float scalar = cos(degToRad(travel_err));
+        float lateralError = dist_to_target;
+
+        if (close) lateralError *= scalar;       // only use cosine magnitude while settling
+        else       lateralError *= sgn(scalar);   // far away, only use the sign (prevents stalling/circles)
+
+        // angularError: when close, target final angle; else target carrot heading
+        float angularError = close ? final_err : travel_err;
+
+        // ===== Exit conditions (LemLib-style): must be close AND both errors settled =====
+        if (close) {
+            const bool dist_ok = fabs(dist_to_target) < settle_dist;
+            const bool ang_ok  = fabs(angularError)   < settle_ang;
+
+            if (dist_ok && ang_ok) settled_ms += (int)dt_ms;
+            else settled_ms = 0;
+
+            if (settled_ms >= settle_time) {
+                std::cout << "SETTLED-----------------" << std::endl;
+                break;
+            }
+        }
+
+        // ===== Early exit if crossed target line while close (optional) =====
+        {
+            // line through target oriented with target heading:
+            // (y - y0)*(-sinθ) <= (x - x0)*cosθ + early_exit_range
+            const float s = sin(degToRad(angle));
+            const float c = cos(degToRad(angle));
+
+            const bool robotSide  = (robotY - y) * (-s) <= (robotX - x) * (c) + early_exit_range;
+            const bool carrotSide = (carrotY - y) * (-s) <= (carrotX - x) * (c) + early_exit_range;
+            const bool sameSide = (robotSide == carrotSide);
+
+            if (!sameSide && prevSameSide && close) {
+                std::cout << "SETTLED-----------------" << std::endl;
+                break;
+            }
+            prevSameSide = sameSide;
+        }
+
+        // ===== PID outputs =====
+        float drive_output   = drivePID.compute(lateralError);
+        float heading_output = headingPID.compute(angularError);
+
+        // Clamp
+        drive_output   = clamp(drive_output,   -max_drive, max_drive);
+        heading_output = clamp(heading_output, -max_turn,  max_turn);
+
+        // Mix
+        const float left_voltage  = drive_output + heading_output;
+        const float right_voltage = drive_output - heading_output;
+
+        driveMotors(left_voltage, right_voltage);
+
+        vex::task::sleep((int)dt_ms);
+        elapsed_ms += (int)dt_ms;
+    }
+
+    if (elapsed_ms >= timeout_ms) {
+        std::cout << "TIMEOUT------------------" << std::endl;
+    }
+
+    std::cout << "X POS: " << chassisOdometry.getXPosition()
+              << " Y POS: " << chassisOdometry.getYPosition() << std::endl;
+
+    brake();
+}
+
+
+
+
+/*
+
+void Drive::movetopos(float x, float y, float angle){
+    // Constants (adjust as needed)
+    float lead            = 0.3f;   // 0.35–0.6 sweet spot
+    float setback         = 0;   // inches (1.5–3.0)
+    float close_threshold = 0.5;   // inches
+    float dt = 10; // ms
+
+    // PID for drive and heading (initialized with initial errors)
+    float initial_drive_error = hypot(x - chassisOdometry.getXPosition(), y - chassisOdometry.getYPosition());
+    float initial_heading_error = inTermsOfNegative180To180(atan2(x - chassisOdometry.getXPosition(), y - chassisOdometry.getYPosition()) * 180.0 / M_PI - chassisOdometry.getHeading());
+    PID drivePID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
+    PID headingPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
+
+    bool crossed_center_line = false; // Placeholder; implement if needed
+
+    while (!drivePID.isSettled()) {
+        updatePosition();
+
+        float robotX = chassisOdometry.getXPosition();
+        float robotY = chassisOdometry.getYPosition();
+        float robot_heading = chassisOdometry.getHeading();
+
+        // 1. Distance to final target
+        float dx = x - robotX;
+        float dy = y - robotY;
+        float target_distance = hypot(dx, dy);
+
+        // 2. Compute carrot point (boomerang)
+        float carrotX = x - sin(degToRad(angle)) * (lead * target_distance + setback);
+        float carrotY = y - cos(degToRad(angle)) * (lead * target_distance + setback);
+
+        // 3. Drive toward carrot
+        float carrot_dx = carrotX - robotX;
+        float carrot_dy = carrotY - robotY;
+        float drive_error = hypot(carrot_dx, carrot_dy);
+
+        // Match your coordinate convention (0° = +Y, from turnToPosition)
+        float carrot_heading = atan2(carrot_dx, carrot_dy) * 180.0 / M_PI;
+        float heading_error = inTermsOfNegative180To180(carrot_heading - robot_heading);
+
+        // 4. Near target or other conditions → switch to final heading
+        bool close_to_target = target_distance < close_threshold;
+        if (close_to_target || crossed_center_line || drive_error < setback) {
+            drive_error = target_distance;
+            heading_error = inTermsOfNegative180To180(angle - robot_heading);
+        } else {
+            // Clamp to ±90° when driving to carrot
+            heading_error = clamp(heading_error, -90.0f, 90.0f);
+        }
+
+        // 5. Compute PID outputs
+        float drive_output = drivePID.compute(drive_error);
+        float heading_output = headingPID.compute(heading_error);
+
+        // 6. Reduce drive power if misaligned
+        drive_output *= cos(degToRad(heading_error));
+
+        // 7. Clamp separately before mixing
+        drive_output = clamp(drive_output, -driveMaxVoltage, driveMaxVoltage);
+        heading_output = clamp(heading_output, -turnMaxVoltage, turnMaxVoltage);
+
+        // Mix voltages
+        float left_voltage = drive_output + heading_output;
+        float right_voltage = drive_output - heading_output;
+
+        driveMotors(left_voltage, right_voltage);
+
+        vex::task::sleep(dt);
+    }
+
+    brake();
+}*/

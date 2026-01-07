@@ -1053,13 +1053,39 @@ void Auton_5()
 
         //Initial Settings
       chassis.setTurnMaxVoltage(8);
-      chassis.setPosition(-40,-16,0);
+      //chassis.setPosition(-40,-16,0);
+      chassis.setPosition(0,0,0);
       mainIntake.setVelocity(100, percent);
       colorSort.setVelocity(100, percent);
       topStage.setVelocity(100, percent);
       bottomStage.setVelocity(100, percent);
     std::cout << "\n\n\n\n\nSTART------------------------------------\n";
 
+
+
+    //ELLIOT PURE PURSUIT TESTING
+
+    
+
+    // chassis.movetopos(0,24,0);
+    // chassis.movetopos(0,48,0);
+    // chassis.movetopos(0,72,0);
+    // chassis.turnToAngle(90);
+    // chassis.movetopos(50,72,90);
+    // chassis.turnToAngle(180);
+    // chassis.movetopos(50,0,180);
+    // chassis.turnToAngle(270);
+    // chassis.movetopos(0,0,270);
+    // chassis.turnToAngle(0);
+    
+    //wait(59,sec);
+    chassis.movetopos(0,24,0);
+    chassis.movetopos(24,48,90);
+    chassis.turnToAngle(225);
+    chassis.movetopos(0,0,180);
+    
+
+    /*                                    //START SOREN PURE PURSUIT TESTING
       chassis.purePursuitToPoint(-40,31);
     chassis.turnToAngle(90);
     chassis.purePursuitToPoint(31,28);
@@ -1089,7 +1115,7 @@ void Auton_5()
     chassis.purePursuitToPoint(-1,-33);
     chassis.turnToAngle(293);
     chassis.purePursuitToPoint(-40,-16);
-    chassis.turnToAngle(0);
+    chassis.turnToAngle(0);     */        ///END SOREN PURE PURSUIT TESTING
 
     // chassis.brake(coast);
     // wait(5, sec);

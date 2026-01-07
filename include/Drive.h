@@ -59,6 +59,8 @@ class Drive
 
     void purePursuitToPoint(float desX, float desY);
 
+    void movetopos(float x, float y, float angle);
+
     void moveable();
 
 
