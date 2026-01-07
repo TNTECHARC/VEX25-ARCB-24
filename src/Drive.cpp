@@ -17,6 +17,9 @@ inertialSensor(inertial(inertialPORT))
     this->driveMaxVoltage = maxVoltage;
     this->turnMaxVoltage = maxVoltage;
     this->odomType = odomType;
+        
+    
+    
 
     // this->chassisOdometry = Odom(2, -1.0, -1.0);
 
@@ -646,3 +649,98 @@ void Drive::setPosition(float x, float y, float heading){
             break;
     }
 }
+
+
+
+// void Drive::purePursuitToPoint(float desX, float desY){
+//     PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
+//     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
+
+//     updatePosition();
+
+//     // Parameters for dampening
+//     const float maxDamp = 1.0f; // Maximum dampening factor (tune as needed)
+//     const float dampAlpha = 0.15f; // How quickly dampening fades (tune as needed)
+//     float initialDistance = 0.0f;
+//     bool firstLoop = true;
+
+//     while (!linearPID.isSettled() || !angularPID.isSettled())
+//     {
+//         updatePosition();
+
+//         float deltaX = desX - chassisOdometry.getXPosition();
+//         float deltaY = desY - chassisOdometry.getYPosition();
+
+//         float distanceError = sqrt(deltaX * deltaX + deltaY * deltaY);
+//         if (firstLoop) {
+//             initialDistance = distanceError;
+//             firstLoop = false;
+//         }
+//         float targetAngle = atan2(deltaX, deltaY) * (180.0 / M_PI);
+//         float headingError = degTo180(targetAngle - inertial1.heading());
+
+//         float linearOutput = linearPID.compute(distanceError);
+//         float angularOutput = angularPID.compute(headingError);
+
+//         // Dampening factor: strong at start, fades as distanceError approaches zero
+//         float dampening = maxDamp * (1.0f - expf(-dampAlpha * distanceError));
+//         float dampenedAngular = angularOutput * dampening;
+
+//         linearOutput = clamp(linearOutput, -driveMaxVoltage, driveMaxVoltage);
+//         dampenedAngular = clamp(dampenedAngular, -turnMaxVoltage, turnMaxVoltage);
+
+//         std::cout << "Angular Output: " << dampenedAngular << "      Linear Output: " << linearOutput << std::endl;
+
+//         driveMotors(linearOutput + dampenedAngular, linearOutput - dampenedAngular);
+//         wait(10, msec);
+//     }
+//     std::cout << "BRAKE BRAKKKEIAEHFIHIAOEFIOAJEIOFJIOAEJIOFJIOAEF AFIEJOJFIOEAJ" << std::endl;
+//     brake();
+//     driveMotors(0, 0);
+//     updatePosition();
+// }
+
+void Drive::purePursuitToPoint(float desX, float desY){
+    PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
+    PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
+
+    updatePosition();
+    float startDeltaX = desX - chassisOdometry.getXPosition();
+    float startDeltaY = desY - chassisOdometry.getYPosition();
+    float startDistance = sqrt(startDeltaX * startDeltaX + startDeltaY * startDeltaY);
+
+    while (!linearPID.isSettled())
+    {
+        updatePosition();
+
+        float deltaX = desX - chassisOdometry.getXPosition();
+        float deltaY = desY - chassisOdometry.getYPosition();
+
+        float distanceError = sqrt(deltaX * deltaX + deltaY * deltaY);
+        float targetAngle = atan2(deltaX, deltaY) * (180.0 / M_PI);
+        float headingError = degTo180(targetAngle - inertial1.heading());
+
+        float linearOutput = linearPID.compute(distanceError);
+        float angularOutput = 0.0f;
+        if (distanceError > driveSettleError)
+        {
+            angularOutput = angularPID.compute(headingError);
+        }
+
+        linearOutput = clamp(linearOutput, -driveMaxVoltage, driveMaxVoltage);
+        float angularScale = 1.0f;
+        if (startDistance > 0.0f)
+        {
+            angularScale = clamp(distanceError / startDistance, 0.3f, 1.0f);
+        }
+        angularOutput = clamp(angularOutput * angularScale, -turnMaxVoltage, turnMaxVoltage);
+
+        driveMotors(linearOutput + angularOutput, linearOutput - angularOutput);
+        wait(10, msec);
+    }
+
+    brake();
+    updatePosition();
+}
+
+

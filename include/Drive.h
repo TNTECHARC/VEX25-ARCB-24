@@ -57,6 +57,7 @@ class Drive
     void driveDistanceWithOdomTime(float distance, float timeLimit);
     void driveDistanceWithOdomTime(float distance, float timeLimit, float maxVoltage);
 
+    void purePursuitToPoint(float desX, float desY);
 
     void moveable();
 

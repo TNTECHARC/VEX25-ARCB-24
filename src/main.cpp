@@ -61,6 +61,7 @@ void Auton_5();
 void Auton_6();
 void Auton_7();
 void Auton_8();
+void default_Auton();
 
 void toggleLift();
 void toggleIntakeFlap();
@@ -163,18 +164,18 @@ void autonomous()
   setDriveTrainConstants();
 
 
-  Auton_1(); // Skills Left
+  //Auton_1(); // Skills Left
   //Auton_2(); // Skills Right
   //Auton_3();
   //Auton_4();
-  //Auton_5();
+  Auton_5();
   //Auton_6();
   //Auton_7(); // Driver Skills Left
   //Auton_8(); // Driver Skills Right
 
 
 
-  //Allows for selection of different auton routes
+  // //Allows for selection of different auton routes
   // switch (lastPressed) 
   // {
   //   case 1:
@@ -202,7 +203,7 @@ void autonomous()
   //     Auton_8();
   //     break;
   //   default:
-  //     DefaultAuton();
+  //     default_Auton();
   //     break;
   // }
 }
@@ -406,7 +407,7 @@ void setDriveTrainConstants()
         1.4,      // Kd - Derivative Constant 1.4
         2,    // Settle Error
         200,    // Time to Settle
-        1000    // End Time
+        2500  //1000  // End Time
     );
     
 }
@@ -1047,35 +1048,71 @@ void Auton_4()
 /// @brief Auton Slot 5 - Write code for route within this function.
 void Auton_5()
 {
-    Brain.Screen.print("Auton 5 running.");
-    toggleDropDown();
+    Brain.Screen.print("Match Auton Left");
+
+
+        //Initial Settings
+      chassis.setTurnMaxVoltage(8);
+      chassis.setPosition(-40,-16,0);
+      mainIntake.setVelocity(100, percent);
+      colorSort.setVelocity(100, percent);
+      topStage.setVelocity(100, percent);
+      bottomStage.setVelocity(100, percent);
+    std::cout << "\n\n\n\n\nSTART------------------------------------\n";
+
+      chassis.purePursuitToPoint(-40,31);
+    chassis.turnToAngle(90);
+    chassis.purePursuitToPoint(31,28);
+    chassis.turnToAngle(180);
+    chassis.purePursuitToPoint(31,-16);
+    chassis.turnToAngle(243);
+    chassis.purePursuitToPoint(-1,-33);
+    chassis.turnToAngle(293);
+    chassis.purePursuitToPoint(-40,-16);
+    chassis.turnToAngle(0);
+        chassis.purePursuitToPoint(-40,31);
+    chassis.turnToAngle(90);
+    chassis.purePursuitToPoint(31,28);
+    chassis.turnToAngle(180);
+    chassis.purePursuitToPoint(31,-16);
+    chassis.turnToAngle(243);
+    chassis.purePursuitToPoint(-1,-33);
+    chassis.turnToAngle(293);
+    chassis.purePursuitToPoint(-40,-16);
+    chassis.turnToAngle(0);
+        chassis.purePursuitToPoint(-40,31);
+    chassis.turnToAngle(90);
+    chassis.purePursuitToPoint(31,28);
+    chassis.turnToAngle(180);
+    chassis.purePursuitToPoint(31,-16);
+    chassis.turnToAngle(243);
+    chassis.purePursuitToPoint(-1,-33);
+    chassis.turnToAngle(293);
+    chassis.purePursuitToPoint(-40,-16);
+    chassis.turnToAngle(0);
+
+    // chassis.brake(coast);
+    // wait(5, sec);
+    // chassis.purePursuitToPoint(-40,-16);
+
+
+
+
+    // chassis.turnToAngle(90);
+    // wait(1, sec);
+    // chassis.turnToAngle(180);  
+    // wait(1, sec);  
+    // chassis.turnToAngle(270);
+    // wait(1, sec);
+    // chassis.turnToAngle(0);
+
+
 }
 
 /// @brief Auton Slot 6 - Write code for route within this function.
 void Auton_6()
 {
-    Brain.Screen.print("Auton 6 running.");
-
-    bottomStage.spin(fwd);
-    wait(1, sec);
-    bottomStage.stop();
-    wait(0.5, sec);
-
-    bottomStage.spin(fwd);
-    wait(1, sec);
-    bottomStage.stop();
-    wait(0.5, sec);
-
-    bottomStage.spin(fwd);
-    wait(1, sec);
-    bottomStage.stop();
-    wait(0.5, sec);
-
-    bottomStage.spin(fwd);
-    wait(1, sec);
-    bottomStage.stop();
-    wait(0.5, sec);
-
+    Brain.Screen.print("Match Auton Right");
 
 }
 
@@ -1436,28 +1473,6 @@ void Auton_7()
 /// @brief Auton Slot 8 - Write code for route within this function.
 void Auton_8()
 {
-  isInAuton = true;
-  rotation1.resetPosition();
-  rotation2.resetPosition();
-  inertial1.resetHeading();
-  wait(100, msec);
-
-  chassis.setDriveConstants(
-        0.7,  // Kp - Proportion Constant
-        0.0003, // Ki - Integral Constant
-        0.01, // Kd - Derivative Constant was 0.17
-        .2, // Settle Error
-        300, // Time to Settle
-        3000 // End Time 5000
-  );
-
-  chassis.driveDistanceWithOdom(72);
-  chassis.turn(90);
-  chassis.driveDistanceWithOdom(72);
-  chassis.turn(90);
-  chassis.driveDistanceWithOdom(72);
-  chassis.turn(90);
-  chassis.driveDistanceWithOdom(72);
-  chassis.turn(90);
+    Brain.Screen.print("Auton 8 running.");
     
 }
