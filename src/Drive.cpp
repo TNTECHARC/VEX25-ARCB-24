@@ -88,16 +88,19 @@ void Drive::arcade()
 {
     int leftY = 0;
     int rightX = 0;
-    if(Controller1.Axis3.position(percent) >= 0)
-        leftY = pow(Controller1.Axis3.position(percent),2)/100;
-    else
-        leftY = pow(Controller1.Axis3.position(percent),2)/-100;
+    if(Controller1.Axis3.position(percent) >= 5)
+        leftY = pow(Controller1.Axis3.position(percent),3)/1000;
+        //leftY = Controller1.Axis3.position(percent);
+    else if(Controller1.Axis3.position(percent) <= -5)
+        leftY = pow(Controller1.Axis3.position(percent),3)/1000;
+        //leftY = Controller1.Axis3.position(percent);
     
-    if(Controller1.Axis1.position(percent) >= 0)
-        rightX = pow(Controller1.Axis1.position(percent),2)/100;
-    else
-        rightX = pow(Controller1.Axis1.position(percent),2)/-100;
-
+    if(Controller1.Axis1.position(percent) >= 5)
+        rightX = pow(Controller1.Axis1.position(percent),3)/1000;
+        //rightX = Controller1.Axis1.position(percent);
+    else if(Controller1.Axis1.position(percent) <= -5)
+        rightX = pow(Controller1.Axis1.position(percent),3)/1000;
+        //rightX = Controller1.Axis1.position(percent);
     leftDrive.spin(forward, leftY+rightX, percent);
     rightDrive.spin(forward, leftY-rightX, percent);
 }
@@ -107,14 +110,18 @@ void Drive::tank(){
     int leftY = 0;
     int rightX = 0;
     if(Controller1.Axis3.position(percent) >= 0)
-        leftY = pow(Controller1.Axis3.position(percent),2)/100;
+        //leftY = pow(Controller1.Axis3.position(percent),2)/100;
+        leftY = Controller1.Axis3.position(percent);
     else
-        leftY = pow(Controller1.Axis3.position(percent),2)/-100;
+        //leftY = pow(Controller1.Axis3.position(percent),2)/-100;
+        leftY = Controller1.Axis3.position(percent);
     
     if(Controller1.Axis2.position(percent) >= 0)
-        rightX = pow(Controller1.Axis2.position(percent),2)/100;
+        //rightX = pow(Controller1.Axis2.position(percent),2)/100;
+        rightX = Controller1.Axis2.position(percent);
     else
-        rightX = pow(Controller1.Axis2.position(percent),2)/-100;
+        //rightX = pow(Controller1.Axis2.position(percent),2)/-100;
+        rightX = Controller1.Axis2.position(percent);
 
     leftDrive.spin(forward, leftY, percent);
     rightDrive.spin(forward, rightX, percent);
@@ -611,9 +618,6 @@ void Drive::updatePosition(){
     }
 }
 
-// void Drive::setPosition(float x, float y, float heading){
-//     chassisOdometry.setPosition(x, y, heading);
-// }
 
 
 void Drive::setPosition(float x, float y, float heading){
@@ -652,53 +656,6 @@ void Drive::setPosition(float x, float y, float heading){
 
 
 
-// void Drive::purePursuitToPoint(float desX, float desY){
-//     PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
-//     PID angularPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
-
-//     updatePosition();
-
-//     // Parameters for dampening
-//     const float maxDamp = 1.0f; // Maximum dampening factor (tune as needed)
-//     const float dampAlpha = 0.15f; // How quickly dampening fades (tune as needed)
-//     float initialDistance = 0.0f;
-//     bool firstLoop = true;
-
-//     while (!linearPID.isSettled() || !angularPID.isSettled())
-//     {
-//         updatePosition();
-
-//         float deltaX = desX - chassisOdometry.getXPosition();
-//         float deltaY = desY - chassisOdometry.getYPosition();
-
-//         float distanceError = sqrt(deltaX * deltaX + deltaY * deltaY);
-//         if (firstLoop) {
-//             initialDistance = distanceError;
-//             firstLoop = false;
-//         }
-//         float targetAngle = atan2(deltaX, deltaY) * (180.0 / M_PI);
-//         float headingError = degTo180(targetAngle - inertial1.heading());
-
-//         float linearOutput = linearPID.compute(distanceError);
-//         float angularOutput = angularPID.compute(headingError);
-
-//         // Dampening factor: strong at start, fades as distanceError approaches zero
-//         float dampening = maxDamp * (1.0f - expf(-dampAlpha * distanceError));
-//         float dampenedAngular = angularOutput * dampening;
-
-//         linearOutput = clamp(linearOutput, -driveMaxVoltage, driveMaxVoltage);
-//         dampenedAngular = clamp(dampenedAngular, -turnMaxVoltage, turnMaxVoltage);
-
-//         std::cout << "Angular Output: " << dampenedAngular << "      Linear Output: " << linearOutput << std::endl;
-
-//         driveMotors(linearOutput + dampenedAngular, linearOutput - dampenedAngular);
-//         wait(10, msec);
-//     }
-//     std::cout << "BRAKE BRAKKKEIAEHFIHIAOEFIOAJEIOFJIOAEJIOFJIOAEF AFIEJOJFIOEAJ" << std::endl;
-//     brake();
-//     driveMotors(0, 0);
-//     updatePosition();
-// }
 
 void Drive::purePursuitToPoint(float desX, float desY){
     PID linearPID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
@@ -744,25 +701,24 @@ void Drive::purePursuitToPoint(float desX, float desY){
 }
 
 void Drive::movetopos(float x, float y, float angle) {
-    // ===== LemLib-style behavior knobs =====
-    const float lead = 0.4f;                // carrot lead factor
-    const float close_range = 7.5f;         // inches: when we enter "close/settle" mode (LemLib default-ish)
+    const float lead = 0.4f;                // carrot lead factor (larger = slower smoother approach, smaller = tighter more aggresive)
+    const float close_range = 7.5f;         // inches: when we enter "close/settle" mode
     const float early_exit_range = 0.0f;    // inches: set >0 if you want earlier exit past target line
 
     // Speed/limits
     const float max_drive = driveMaxVoltage;   // volts
     const float max_turn  = turnMaxVoltage;    // volts
-    const float dt_ms = 10.0f;
+    const float dt_ms = 10.0f;                 // how often loop updates
 
-    // Exit conditions (use your constants)
+    // Exit conditions
     const float settle_dist = driveSettleError;   // inches
     const float settle_ang  = turnSettleError;    // degrees
     const int   settle_time = driveTimeToSettle;  // ms
     const int   timeout_ms  = driveEndTime;       // ms
 
     // PIDs (use your tuned values)
-    PID drivePID(0.9, 0.0, 2.0, settle_dist, settle_time, timeout_ms);
-    PID headingPID(0.3, 0.0, 1.4, settle_ang,  settle_time, timeout_ms);
+    PID drivePID(0.7, 0.0001, 1.7, settle_dist, settle_time, timeout_ms); //timeout_ms
+    PID headingPID(0.3, 0.0, 1.4, settle_ang,  settle_time, timeout_ms); //timeout_ms
 
     // Persistent loop variables (like LemLib)
     bool close = false;
@@ -815,9 +771,16 @@ void Drive::movetopos(float x, float y, float angle) {
 
         if (close) lateralError *= scalar;       // only use cosine magnitude while settling
         else       lateralError *= sgn(scalar);   // far away, only use the sign (prevents stalling/circles)
+        
+        
+        /*if (close && dist_to_target > .5f)
+            lateralError *= scalar;
+        else
+            lateralError = dist_to_target;*/
 
         // angularError: when close, target final angle; else target carrot heading
         float angularError = close ? final_err : travel_err;
+
 
         // ===== Exit conditions (LemLib-style): must be close AND both errors settled =====
         if (close) {
@@ -825,18 +788,23 @@ void Drive::movetopos(float x, float y, float angle) {
             const bool ang_ok  = fabs(angularError)   < settle_ang;
 
             if (dist_ok && ang_ok) settled_ms += (int)dt_ms;
-            else settled_ms = 0;
+            else if (settled_ms > 0)
+                settled_ms -= (int)dt_ms;
 
             if (settled_ms >= settle_time) {
-                std::cout << "SETTLED-----------------" << std::endl;
-                break;
-            }
-        }
+            std::cout << "\nSETTTTTTTTTTTTTTTTTTTTTTTTLE";
+            break;  // SETTLED
+    }
+}
 
         // ===== Early exit if crossed target line while close (optional) =====
         {
             // line through target oriented with target heading:
             // (y - y0)*(-sinθ) <= (x - x0)*cosθ + early_exit_range
+
+            const float final_heading_err = fabs(inTermsOfNegative180To180(angle - robotH));
+            const bool heading_ok = final_heading_err < settle_ang;  // 1.5° in your case
+
             const float s = sin(degToRad(angle));
             const float c = cos(degToRad(angle));
 
@@ -844,10 +812,10 @@ void Drive::movetopos(float x, float y, float angle) {
             const bool carrotSide = (carrotY - y) * (-s) <= (carrotX - x) * (c) + early_exit_range;
             const bool sameSide = (robotSide == carrotSide);
 
-            if (!sameSide && prevSameSide && close) {
-                std::cout << "SETTLED-----------------" << std::endl;
+            /*if (!sameSide && prevSameSide && close && heading_ok) {
+                std::cout << "Yes I SETTLED-----------------" << std::endl;
                 break;
-            }
+            }*/
             prevSameSide = sameSide;
         }
 
@@ -857,6 +825,7 @@ void Drive::movetopos(float x, float y, float angle) {
 
         // Clamp
         drive_output   = clamp(drive_output,   -max_drive, max_drive);
+        if (fabs(drive_output) < 1.0f) drive_output = sgn(drive_output) * 1.0f;
         heading_output = clamp(heading_output, -max_turn,  max_turn);
 
         // Mix
@@ -874,85 +843,11 @@ void Drive::movetopos(float x, float y, float angle) {
     }
 
     std::cout << "X POS: " << chassisOdometry.getXPosition()
-              << " Y POS: " << chassisOdometry.getYPosition() << std::endl;
+              << " Y POS: " << chassisOdometry.getYPosition() 
+              << " HEADING: " << chassisOdometry.getHeading() << std::endl;
 
     brake();
 }
 
 
 
-
-/*
-
-void Drive::movetopos(float x, float y, float angle){
-    // Constants (adjust as needed)
-    float lead            = 0.3f;   // 0.35–0.6 sweet spot
-    float setback         = 0;   // inches (1.5–3.0)
-    float close_threshold = 0.5;   // inches
-    float dt = 10; // ms
-
-    // PID for drive and heading (initialized with initial errors)
-    float initial_drive_error = hypot(x - chassisOdometry.getXPosition(), y - chassisOdometry.getYPosition());
-    float initial_heading_error = inTermsOfNegative180To180(atan2(x - chassisOdometry.getXPosition(), y - chassisOdometry.getYPosition()) * 180.0 / M_PI - chassisOdometry.getHeading());
-    PID drivePID(driveKp, driveKi, driveKd, driveSettleError, driveTimeToSettle, driveEndTime);
-    PID headingPID(turnKp, turnKi, turnKd, turnSettleError, turnTimeToSettle, turnEndTime);
-
-    bool crossed_center_line = false; // Placeholder; implement if needed
-
-    while (!drivePID.isSettled()) {
-        updatePosition();
-
-        float robotX = chassisOdometry.getXPosition();
-        float robotY = chassisOdometry.getYPosition();
-        float robot_heading = chassisOdometry.getHeading();
-
-        // 1. Distance to final target
-        float dx = x - robotX;
-        float dy = y - robotY;
-        float target_distance = hypot(dx, dy);
-
-        // 2. Compute carrot point (boomerang)
-        float carrotX = x - sin(degToRad(angle)) * (lead * target_distance + setback);
-        float carrotY = y - cos(degToRad(angle)) * (lead * target_distance + setback);
-
-        // 3. Drive toward carrot
-        float carrot_dx = carrotX - robotX;
-        float carrot_dy = carrotY - robotY;
-        float drive_error = hypot(carrot_dx, carrot_dy);
-
-        // Match your coordinate convention (0° = +Y, from turnToPosition)
-        float carrot_heading = atan2(carrot_dx, carrot_dy) * 180.0 / M_PI;
-        float heading_error = inTermsOfNegative180To180(carrot_heading - robot_heading);
-
-        // 4. Near target or other conditions → switch to final heading
-        bool close_to_target = target_distance < close_threshold;
-        if (close_to_target || crossed_center_line || drive_error < setback) {
-            drive_error = target_distance;
-            heading_error = inTermsOfNegative180To180(angle - robot_heading);
-        } else {
-            // Clamp to ±90° when driving to carrot
-            heading_error = clamp(heading_error, -90.0f, 90.0f);
-        }
-
-        // 5. Compute PID outputs
-        float drive_output = drivePID.compute(drive_error);
-        float heading_output = headingPID.compute(heading_error);
-
-        // 6. Reduce drive power if misaligned
-        drive_output *= cos(degToRad(heading_error));
-
-        // 7. Clamp separately before mixing
-        drive_output = clamp(drive_output, -driveMaxVoltage, driveMaxVoltage);
-        heading_output = clamp(heading_output, -turnMaxVoltage, turnMaxVoltage);
-
-        // Mix voltages
-        float left_voltage = drive_output + heading_output;
-        float right_voltage = drive_output - heading_output;
-
-        driveMotors(left_voltage, right_voltage);
-
-        vex::task::sleep(dt);
-    }
-
-    brake();
-}*/
