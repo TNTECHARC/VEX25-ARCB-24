@@ -29,6 +29,7 @@ using namespace vex;
   int lastPressed = 0;
   int teamColor = 0; //red = 0, blue = 1
   int driver = 0; //Elliot = 0, Jacob = 1
+  bool odomDebugEnabled = true;
 
   // Define Values for the Chassis here:
   Drive chassis
@@ -36,13 +37,13 @@ using namespace vex;
     motor_group(LFT, LFB, LBB, LBT), // Left drive train motors
     motor_group(RFT, RFB, RBB, RBT), // Right drive train motors
     PORT20,               // Inertial Sensor Port
-    2.66,              // The diameter size of the wheel in inches
+    2.66,              // The diameter size of the wheel in inches 2.66
     1,                   // 
     12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
     odomType,
     1.955,                  //Odometry wheel diameter (set to zero if no odom) (1.96 robot behind by .2)
-    -1.250,               //Odom pod1 offset  -3.867, -1.22
-    -1.250                //Odom pod2 offset  -3.867, -1.22
+    -1.220,               //Odom pod1 offset  -3.867, -1.22
+    -1.220                //Odom pod2 offset  -3.867, -1.22
   );
 
 //////////////////////////////////////////////////////////////////////
@@ -67,6 +68,7 @@ void slowIntake();
 void toggleColorSort();
 void stopAllIntakeMotors();
 void toggleDropDown();
+int odomDebugThread();
 
 //////////////////////////////////////////////////////////////////////
 
@@ -228,8 +230,8 @@ void usercontrol()
   // Controller1.ButtonUp.pressed(toggleIntakeFlap);
   // Controller1.ButtonDown.pressed(slowIntake);
   Controller1.ButtonRight.pressed(toggleColorSort);
-  Controller1.ButtonLeft.pressed(toggleDropDown);
-
+  Controller1.ButtonL2.pressed(toggleDropDown);
+  Controller1.ButtonL2.released(toggleDropDown);
 
   //For Skills Auton
 
@@ -265,7 +267,7 @@ void usercontrol()
         mainIntake.spin(reverse);
         topStage.spin(reverse);
         colorSort.spin(forward, 25, percent);
-      }else if(Controller1.ButtonL2.pressing()){
+      }else if(Controller1.ButtonLeft.pressing()){
         matchLoad.set(true);
         mainIntake.spin(forward);
         if(lastSeen == teamColor || !isColorSorting){
@@ -389,7 +391,7 @@ void setDriveTrainConstants()
         0.7,  // Kp - Proportion Constant
         0.0001, // Ki - Integral Constant
         1.7, // Kd - Derivative Constant
-        1.00, // Settle Error
+        0.75, // Settle Error
         200, // Time to Settle
         2500 // End Time 5000
     );  
@@ -649,14 +651,14 @@ void Auton_2()
 {
   //Brain.Screen.print("Skills Left Running.");
     std::cout << "\n\n\n\n\nSTART------------------------------------\n";
-
+thread odomThread(odomDebugThread);
 mainIntake.setVelocity(100, percent);
     colorSort.setVelocity(100, percent);
     topStage.setVelocity(100, percent);
     bottomStage.setVelocity(100, percent);
     chassis.setPosition(0,0,0);
-    chassis.setDriveMaxVoltage(10);
-    chassis.setTurnMaxVoltage(8);
+    chassis.setDriveMaxVoltage(12);
+    chassis.setTurnMaxVoltage(10);
     
     // chassis.driveDistanceWithOdom(12);
     // chassis.driveDistanceWithOdom(12);
@@ -678,16 +680,42 @@ mainIntake.setVelocity(100, percent);
     // std::cout << "\n" << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     // chassis.turnToAngle(0);
     // std::cout << "\n" << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+
+
     chassis.movetopos(0,24,0);
     chassis.movetopos(0,48,0);
     std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
-    chassis.turnToPosition(0,0);
+    // chassis.turnToPosition(0,0);
+    chassis.turnToAngle(180);
     std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     chassis.movetopos(0,24,180);
     std::cout << "\nDrive Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     chassis.movetopos(0,0,180);
     std::cout << "\nDrive Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
-    chassis.turnToPosition(0,24); 
+    //chassis.turnToPosition(0,24); 
+    chassis.turnToAngle(0);
+    
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToPosition(0,12);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToPosition(12,0);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToPosition(0,-12);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToPosition(-12,0);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToAngle(90);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToAngle(180);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToAngle(270);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToAngle(0);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+
+    odomDebugEnabled = false;
 }
 
 /// @brief Auton Slot 3 - Write code for route within this function.
@@ -1468,4 +1496,17 @@ void Auton_8()
 {
     //Brain.Screen.print("Auton 8 Running");
 
+}
+
+
+int odomDebugThread() {
+  while (odomDebugEnabled) {
+    std::cout << "X POS: " << chassis.chassisOdometry.getXPosition()
+              << " Y POS: " << chassis.chassisOdometry.getYPosition()
+              << " HEADING: " << chassis.chassisOdometry.getHeading()
+              << std::endl;
+
+    vex::this_thread::sleep_for(100);
+  }
+  return 0;
 }
