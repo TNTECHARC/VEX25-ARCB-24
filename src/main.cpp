@@ -42,8 +42,8 @@ using namespace vex;
     12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
     odomType,
     1.955*1.143,                  //Odometry wheel diameter (set to zero if no odom) (1.96 robot behind by .2)
-    -1.220,               //Odom pod1 offset  -3.867, -1.22
-    -1.220                //Odom pod2 offset  -3.867, -1.22
+    -1.280,               //Odom pod1 offset  -3.867, -1.22
+    -1.280                //Odom pod2 offset  -3.867, -1.22
   );
 
 //////////////////////////////////////////////////////////////////////
@@ -387,13 +387,13 @@ int main()
 void setDriveTrainConstants()
 {
 
-  //Working
+  
     // Set the Drive PID values for the DriveTrain
     chassis.setDriveConstants(
         0.7,  // Kp - Proportion Constant
-        0.0001, // Ki - Integral Constant
-        1.7, // Kd - Derivative Constant
-        0.75, // Settle Error
+        0.000, // Ki - Integral Constant
+        1, // Kd - Derivative Constant
+        0.5, // Settle Error
         200, // Time to Settle
         2500 // End Time 5000
     );  
@@ -401,32 +401,40 @@ void setDriveTrainConstants()
     // Set the Turn PID values for the DriveTrain
     chassis.setTurnConstants(
         0.27,    // Kp - Proportion Constant
-        0.000,      // Ki - Integral Constant
+        0.0001,      // Ki - Integral Constant
         1.5,      // Kd - Derivative Constant 1.4
-        1,    // Settle Error
+        0.75,    // Settle Error
         200,    // Time to Settle
         2500  //1000  // End Time
     );
-    //   chassis.setDriveConstants(
-    //     0.979642,  // Kp - Proportion Constant 1
-    //     0, // Ki - Integral Constant
-    //     0.0973749, // Kd - Derivative Constant 7
-    //     0.5, // Settle Error
-    //     200, // Time to Settle
-    //     2500 // End Time 5000
-    // );  
 
 
 
-    //     // Set the Turn PID values for the DriveTrain
-    // chassis.setTurnConstants(
-    //     0.189,    // Kp - Proportion Constant
-    //     0.000,      // Ki - Integral Constant
-    //     1.05,      // Kd - Derivative Constant 1.4
-    //     0.5,    // Settle Error
-    //     200,    // Time to Settle
-    //     2500  //1000  // End Time
-    //);
+
+
+
+
+  // //Working
+  //   // Set the Drive PID values for the DriveTrain
+  //   chassis.setDriveConstants(
+  //       0.7,  // Kp - Proportion Constant
+  //       0.0001, // Ki - Integral Constant
+  //       1.7, // Kd - Derivative Constant
+  //       0.75, // Settle Error
+  //       200, // Time to Settle
+  //       2500 // End Time 5000
+  //   );  
+
+  //   // Set the Turn PID values for the DriveTrain
+  //   chassis.setTurnConstants(
+  //       0.27,    // Kp - Proportion Constant
+  //       0.000,      // Ki - Integral Constant
+  //       1.5,      // Kd - Derivative Constant 1.4
+  //       1,    // Settle Error
+  //       200,    // Time to Settle
+  //       2500  //1000  // End Time
+  //   );
+
 
 
 
@@ -653,8 +661,8 @@ void Auton_2()
 {
   //Brain.Screen.print("Skills Left Running.");
     std::cout << "\n\n\n\n\nSTART------------------------------------\n";
-// thread odomThread(odomDebugThread);
-mainIntake.setVelocity(100, percent);
+    //thread odomThread(odomDebugThread);
+    mainIntake.setVelocity(100, percent);
     colorSort.setVelocity(100, percent);
     topStage.setVelocity(100, percent);
     bottomStage.setVelocity(100, percent);
@@ -686,16 +694,25 @@ mainIntake.setVelocity(100, percent);
 
     chassis.movetopos(0,24,0);
     chassis.movetopos(0,48,0);
+    wait(3, sec);
     std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     // chassis.turnToPosition(0,0);
     chassis.turnToAngle(180);
     std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    wait(3, sec);
+        chassis.turnToAngle(0);
+    std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    wait(3, sec);
+        chassis.turnToAngle(180);
+    std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    wait(3, sec);
     chassis.movetopos(0,24,180);
     std::cout << "\nDrive Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     chassis.movetopos(0,0,180);
     std::cout << "\nDrive Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     //chassis.turnToPosition(0,24); 
     chassis.turnToAngle(0);
+    std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     
     // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     // chassis.turnToPosition(0,12);
@@ -706,6 +723,10 @@ mainIntake.setVelocity(100, percent);
     // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     // chassis.turnToPosition(-12,0);
     // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+    // chassis.turnToPosition(0,0);
+    // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
+
+
 
     // std::cout << "\nTurn Pos: " << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << ", " << chassis.chassisOdometry.getHeading() << "";
     // chassis.turnToAngle(90);

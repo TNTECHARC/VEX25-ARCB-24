@@ -190,23 +190,23 @@ void Odom::updatePositionTwoAt45(float currentLeftDegrees, float currentRightDeg
     //taking this out make turning x accurate
     if(fabs(deltaHeading) > 0.01){
         //THIS MAY NEED TO BE += INSTEAD
-        deltaLeft += leftRotationDistance*degToRad(deltaHeading)/sqrt(2);
-        deltaRight -= rightRotationDistance*degToRad(deltaHeading)/sqrt(2);
+        deltaLeft -= leftRotationDistance*degToRad(deltaHeading)/sqrt(2);
+        deltaRight += rightRotationDistance*degToRad(deltaHeading)/sqrt(2);
     }
 
     // //Gives answer in radians
-    float deltaY = (deltaLeft + deltaRight) / sqrt(2.0);
-    float deltaX = (deltaLeft - deltaRight) / sqrt(2.0);
+    //float deltaY = (deltaLeft + deltaRight) / sqrt(2.0);
+    //float deltaX = (deltaLeft - deltaRight) / sqrt(2.0);
 
 
-    // float deltaX = (deltaLeft + deltaRight) / 1.3382612;
-    // float deltaY = (deltaLeft - deltaRight) / 1.4862896;
+    float deltaX = (deltaLeft + deltaRight) / 1.3382612;
+    float deltaY = (deltaLeft - deltaRight) / 1.4862896;
 
     // std::cout << "DeltaX: " << deltaX << ", DeltaY: " << deltaY << std::endl;
 
     //Update x and y positions and heading
     float avgHeading = degToRad(getHeading()+deltaHeading/2.0);
-    float globalDeltaX = deltaY * cos(avgHeading) - deltaX * sin(avgHeading);
+    float globalDeltaX = deltaY * cos(avgHeading) + deltaX * sin(avgHeading);
     float globalDeltaY = deltaY * sin(avgHeading) + deltaX * cos(avgHeading);
 
     // std::cout << "globalDeltaX: " << globalDeltaX << ", globalDeltaY: " << globalDeltaY << std::endl;

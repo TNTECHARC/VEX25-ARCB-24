@@ -292,11 +292,11 @@ void Drive::turnToAngle(float angle, float maxVoltage)
         float output = turnPID.compute(error);
 
         //Minimum output threshold for turning
-        if(fabs(output) < 1)
+        if(fabs(output) < 1.55)
             if(output < 0)
-                output = -1.5;
+                output = -1.55;
             else
-                output = 1.5;
+                output = 1.55;
         else
             output = clamp(output, -maxVoltage, maxVoltage);
 
@@ -720,11 +720,11 @@ void Drive::movetopos(float x, float y, float angle) {
     //PID drivePID(0.8, 0, .9, settle_dist, settle_time, timeout_ms); //timeout_ms
     //PID headingPID(1.3, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
     
-    PID drivePID(0.4, 0.0, 2, settle_dist, settle_time, timeout_ms);
-    PID headingPID(0.3, 0.0, 2, settle_ang,  settle_time, timeout_ms);
+    PID drivePID(0.7, 0.0, 1.7, settle_dist, settle_time, timeout_ms);
+    PID headingPID(0.27, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms);
 
-    // PID drivePID(0.9, 0, 2, settle_dist, settle_time, timeout_ms); //timeout_ms
-    // PID headingPID(0.189, 0.000, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
+    // PID drivePID(0.4, 0, 2, settle_dist, settle_time, timeout_ms); //timeout_ms
+    // PID headingPID(0.3, 0.000, 2, settle_ang,  settle_time, timeout_ms); //timeout_ms
 
     // Persistent loop variables (like LemLib)
     bool close = false;
