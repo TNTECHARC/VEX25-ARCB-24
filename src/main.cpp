@@ -41,7 +41,7 @@ using namespace vex;
     1,                   // 
     12,                   // The maximum amount of the voltage used in the drivebase (1 - 12)
     odomType,
-    1.955,                  //Odometry wheel diameter (set to zero if no odom) (1.96 robot behind by .2)
+    1.955*1.143,                  //Odometry wheel diameter (set to zero if no odom) (1.96 robot behind by .2)
     -1.220,               //Odom pod1 offset  -3.867, -1.22
     -1.220                //Odom pod2 offset  -3.867, -1.22
   );
@@ -171,6 +171,8 @@ void autonomous()
   //Auton_6(); // Top Descore
   //Auton_7(); // (score bottom)
   //Auton_8(); // (score top)
+
+  // chassis.moveable();
 
 
 
@@ -651,7 +653,7 @@ void Auton_2()
 {
   //Brain.Screen.print("Skills Left Running.");
     std::cout << "\n\n\n\n\nSTART------------------------------------\n";
-thread odomThread(odomDebugThread);
+// thread odomThread(odomDebugThread);
 mainIntake.setVelocity(100, percent);
     colorSort.setVelocity(100, percent);
     topStage.setVelocity(100, percent);

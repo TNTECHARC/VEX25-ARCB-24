@@ -720,7 +720,7 @@ void Drive::movetopos(float x, float y, float angle) {
     //PID drivePID(0.8, 0, .9, settle_dist, settle_time, timeout_ms); //timeout_ms
     //PID headingPID(1.3, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
     
-    PID drivePID(0.9, 0.0, 2, settle_dist, settle_time, timeout_ms);
+    PID drivePID(0.4, 0.0, 2, settle_dist, settle_time, timeout_ms);
     PID headingPID(0.3, 0.0, 2, settle_ang,  settle_time, timeout_ms);
 
     // PID drivePID(0.9, 0, 2, settle_dist, settle_time, timeout_ms); //timeout_ms
