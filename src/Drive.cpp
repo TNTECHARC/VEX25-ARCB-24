@@ -89,18 +89,18 @@ void Drive::arcade()
     int leftY = 0;
     int rightX = 0;
     if(Controller1.Axis3.position(percent) > 0)
-        //leftY = pow(Controller1.Axis3.position(percent),3)/1000;
-        leftY = Controller1.Axis3.position(percent);
+        leftY = pow(Controller1.Axis3.position(percent),2)/100;
+        //leftY = Controller1.Axis3.position(percent);
     else if(Controller1.Axis3.position(percent) < 0)
-        //leftY = pow(Controller1.Axis3.position(perce//nt),3)/1000;
-        leftY = Controller1.Axis3.position(percent);
+        leftY = pow(Controller1.Axis3.position(percent),2)/-100;
+        //leftY = Controller1.Axis3.position(percent);
     
     if(Controller1.Axis1.position(percent) > 0)
-        //rightX = pow(Controller1.Axis1.position(percent),3)/1000;
-        rightX = Controller1.Axis1.position(percent);
+        rightX = pow(Controller1.Axis1.position(percent),2)/100;
+        //rightX = Controller1.Axis1.position(percent);
     else if(Controller1.Axis1.position(percent) < 0)
-        //rightX = pow(Controller1.Axis1.position(percent),3)/1000;
-        rightX = Controller1.Axis1.position(percent);
+        rightX = pow(Controller1.Axis1.position(percent),2)/-100;
+        //rightX = Controller1.Axis1.position(percent);
     leftDrive.spin(forward, leftY+rightX, percent);
     rightDrive.spin(forward, leftY-rightX, percent);
 }
@@ -110,18 +110,18 @@ void Drive::tank(){
     int leftY = 0;
     int rightX = 0;
     if(Controller1.Axis3.position(percent) >= 0)
-        //leftY = pow(Controller1.Axis3.position(percent),2)/100;
-        leftY = Controller1.Axis3.position(percent);
+        leftY = pow(Controller1.Axis3.position(percent),2)/100;
+        //leftY = Controller1.Axis3.position(percent);
     else
-        //leftY = pow(Controller1.Axis3.position(percent),2)/-100;
-        leftY = Controller1.Axis3.position(percent);
+        leftY = pow(Controller1.Axis3.position(percent),2)/-100;
+        //leftY = Controller1.Axis3.position(percent);
     
     if(Controller1.Axis2.position(percent) >= 0)
-        //rightX = pow(Controller1.Axis2.position(percent),2)/100;
-        rightX = Controller1.Axis2.position(percent);
+        rightX = pow(Controller1.Axis2.position(percent),2)/100;
+        //rightX = Controller1.Axis2.position(percent);
     else
-        //rightX = pow(Controller1.Axis2.position(percent),2)/-100;
-        rightX = Controller1.Axis2.position(percent);
+        rightX = pow(Controller1.Axis2.position(percent),2)/-100;
+        //rightX = Controller1.Axis2.position(percent);
 
     leftDrive.spin(forward, leftY, percent);
     rightDrive.spin(forward, rightX, percent);
@@ -720,11 +720,11 @@ void Drive::movetopos(float x, float y, float angle) {
     //PID drivePID(0.8, 0, .9, settle_dist, settle_time, timeout_ms); //timeout_ms
     //PID headingPID(1.3, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
     
-    PID drivePID(0.7, 0.0, 1.7, settle_dist, settle_time, timeout_ms);
-    PID headingPID(0.27, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms);
+    PID drivePID(0.8, 0.0001, 1.7, settle_dist, settle_time, timeout_ms);
+    PID headingPID(0.3, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms);
 
-    // PID drivePID(0.4, 0, 2, settle_dist, settle_time, timeout_ms); //timeout_ms
-    // PID headingPID(0.3, 0.000, 2, settle_ang,  settle_time, timeout_ms); //timeout_ms
+    // PID drivePID(0.6, 0, 1.7, settle_dist, settle_time, timeout_ms); //timeout_ms
+    // PID headingPID(0.27, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
 
     // Persistent loop variables (like LemLib)
     bool close = false;
@@ -855,8 +855,7 @@ void Drive::movetopos(float x, float y, float angle) {
     brake();
 }
 
-
-void Drive::movetopos(float x, float y, float angle, bool reverse) {
+void Drive::movetoposTime(float x, float y, float angle, float time) {
     const float lead = 0.4f;                // carrot lead factor (larger = slower smoother approach, smaller = tighter more aggresive)
     const float close_range = 7.5f;         // inches: when we enter "close/settle" mode
     const float early_exit_range = 0.0f;    // inches: set >0 if you want earlier exit past target line
@@ -873,8 +872,14 @@ void Drive::movetopos(float x, float y, float angle, bool reverse) {
     const int   timeout_ms  = driveEndTime;       // ms
 
     // PIDs (use your tuned values)
-    PID drivePID(0.7, 0.0001, 1.7, settle_dist, settle_time, timeout_ms); //timeout_ms
-    PID headingPID(0.27, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
+    //PID drivePID(0.8, 0, .9, settle_dist, settle_time, timeout_ms); //timeout_ms
+    //PID headingPID(1.3, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
+    
+    PID drivePID(0.8, 0.0001, 1.7, settle_dist, time, timeout_ms);
+    PID headingPID(0.3, 0.0001, 1.5, settle_ang, time, timeout_ms);
+
+    // PID drivePID(0.6, 0, 1.7, settle_dist, settle_time, timeout_ms); //timeout_ms
+    // PID headingPID(0.27, 0.0001, 1.5, settle_ang,  settle_time, timeout_ms); //timeout_ms
 
     // Persistent loop variables (like LemLib)
     bool close = false;
@@ -917,8 +922,7 @@ void Drive::movetopos(float x, float y, float angle, bool reverse) {
         const float carrot_heading = atan2(cdx, cdy) * 180.0f / (float)M_PI;
 
         // Travel heading error (toward carrot) and final heading error (pose)
-        const float travel_heading = reverse ? inTermsOfNegative180To180(carrot_heading + 180.0f): carrot_heading;
-        const float travel_err = inTermsOfNegative180To180(travel_heading - robotH);
+        const float travel_err = inTermsOfNegative180To180(carrot_heading - robotH);
         const float final_err  = inTermsOfNegative180To180(angle - robotH);
 
         // LemLib-style errors:
@@ -935,8 +939,8 @@ void Drive::movetopos(float x, float y, float angle, bool reverse) {
         else
             lateralError = dist_to_target;*/
 
-        // angularError: when close, target final angle; if reversing, hold final angle the whole time
-        float angularError = close ? final_err : (reverse ? final_err : travel_err);
+        // angularError: when close, target final angle; else target carrot heading
+        float angularError = close ? final_err : travel_err;
 
 
         // ===== Exit conditions (LemLib-style): must be close AND both errors settled =====
