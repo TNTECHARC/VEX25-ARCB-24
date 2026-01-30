@@ -255,11 +255,7 @@ void usercontrol()
       if(Controller1.ButtonR1.pressing() && !Controller1.ButtonR2.pressing()){
         mainIntake.spin(forward);
         topStage.spin(forward, 50, percent);
-        // if(flapState){
-        //   topStage.spin(forward);
-        // }else{
-        //   topStage.stop();
-        // }
+        flapState = false;
         if(lastSeen == teamColor || !isColorSorting){
           colorSort.spin(forward);
         }else{
@@ -269,23 +265,10 @@ void usercontrol()
         mainIntake.spin(reverse);
         topStage.spin(reverse);
         colorSort.spin(forward, 25, percent);
-      }else if(Controller1.ButtonA.pressing()){
-        matchLoad.set(true);
-        mainIntake.spin(forward);
-        if(lastSeen == teamColor || !isColorSorting){
-          colorSort.spin(forward);
-        }else{
-          colorSort.spin(reverse);
-        }
       }else if(Controller1.ButtonR1.pressing() && Controller1.ButtonR2.pressing()){
         mainIntake.spin(forward);
         topStage.spin(forward);
         flapState = true;
-        // if(lastSeen == teamColor || !isColorSorting){
-        //   colorSort.spin(forward);
-        // }else{
-        //   colorSort.spin(reverse);
-        // }
         colorSort.spin(fwd);
       }else if(Controller1.ButtonDown.pressing()){
         mainIntake.spin(reverse, 35, percent);
@@ -301,13 +284,29 @@ void usercontrol()
           colorSort.spin(reverse);
         }
       }else{
-        matchLoad.set(false);
         mainIntake.stop();
         colorSort.stop();
         topStage.stop();
       }
       if(!Controller1.ButtonR1.pressing() && !Controller1.ButtonDown.pressing() && !Controller1.ButtonUp.pressing()){
         flapState = false;
+      }
+
+      if(Controller1.ButtonA.pressing()){
+        matchLoad.set(true);
+        mainIntake.spin(forward);
+        topStage.spin(forward, 50, percent);
+        if(lastSeen == teamColor || !isColorSorting){
+          colorSort.spin(forward);
+        }else
+          colorSort.spin(reverse);
+      }else{
+        matchLoad.set(false);
+        if(!Controller1.ButtonR1.pressing() && !Controller1.ButtonDown.pressing() && !Controller1.ButtonR2.pressing() && !Controller1.ButtonUp.pressing()){
+          mainIntake.stop();
+          colorSort.stop();
+          topStage.stop();
+        }
       }
       intakeFlap.set(flapState);
     wait(20, msec);
