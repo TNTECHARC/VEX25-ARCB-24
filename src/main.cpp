@@ -459,7 +459,7 @@ void Auton_1()
     std::cout << "\n\n\n\n\nSTART------------------------------------\n";
 
     //Initial Settings
-      chassis.setTurnMaxVoltage(8);
+      chassis.setTurnMaxVoltage(10);
       chassis.setPosition(-46,15,0);
       mainIntake.setVelocity(100, percent);
       colorSort.setVelocity(100, percent);
@@ -491,7 +491,7 @@ void Auton_1()
       wait(0.5, sec);
       matchLoad.set(true);
  
-    //Goes for matchload
+    //Goes for matchloader
       chassis.driveDistanceWithOdom(-15); 
       chassis.turnToAngle(270);
       toggleLift();
@@ -525,19 +525,19 @@ void Auton_1()
       colorSort.stop();
       topStage.stop();
 
-      chassis.driveDistanceWithOdom(-8.5);
+      chassis.driveDistanceWithOdomTime(-8.5,700);          //added timeout
       toggleIntakeFlap(); 
       chassis.turnToAngle(45);
-      chassis.driveDistanceWithOdom(17); 
+      chassis.driveDistanceWithOdom(19); 
       chassis.turnToAngle(87); 
       chassis.driveDistanceWithOdom(33);
     //Grabs 2 from bellow
       chassis.turnToAngle(180);
-      chassis.driveDistanceWithOdomTime(5, 1000);
+      chassis.driveDistanceWithOdomTime(4.5, 1000);
       toggleDropDown();
       wait(0.3, sec);
       matchLoad.set(true);
-      chassis.driveDistanceWithOdomTime(-5, 1000);
+      chassis.driveDistanceWithOdomTime(-4, 1000);
     //Grab 2 Blue from center under goal
       toggleDropDown(); 
       chassis.turnToAngle(90);
@@ -553,7 +553,7 @@ void Auton_1()
     //Getting 3 blue and 3 red from wall intake
       toggleLift(); 
       chassis.turnToAngle(130);
-      chassis.driveDistanceWithOdom(19.5);
+      chassis.driveDistanceWithOdom(18);                            //19.5
       chassis.turnToAngle(90);
       topStage.spin(forward);
       chassis.driveDistanceWithOdomTime(9.5, 1000); 
@@ -563,7 +563,7 @@ void Auton_1()
       topStage.stop();
 
     //Scoring 5 blue and 2 red
-      chassis.driveDistanceWithOdomTime(-4, 1500);
+      chassis.driveDistanceWithOdomTime(-4, 1000);
       chassis.turnToAngle(270);
       matchLoad.set(false);
       chassis.driveDistanceWithOdomTime(22, 1000); 
@@ -584,8 +584,8 @@ void Auton_1()
 
 
     //Goes for wall balls
-      chassis.driveDistanceWithOdom(-15.5); 
-      chassis.turnToAngle(0);
+      chassis.driveDistanceWithOdomTime(-15.5,1000); 
+      chassis.turnToAngleTime(0,1000,10);
       chassis.driveDistanceWithOdomTime(15, 1000);
       matchLoad.set(true);
       chassis.driveDistanceWithOdomTime(-5, 1000);
@@ -596,7 +596,7 @@ void Auton_1()
 
 
     //Out of park zone
-      chassis.driveDistanceWithOdomTime(10, 1000); //9.5
+      chassis.driveDistanceWithOdomTime(7.5, 1000); //9.5                   //10
       toggleDropDown();
       wait(1, sec);
       chassis.driveDistanceWithOdomTime(-7, 1000);
@@ -605,7 +605,7 @@ void Auton_1()
       bottomStage.spin(forward);
       colorSort.spin(forward);
       topStage.spin(forward);
-      chassis.driveDistanceWithOdom(27); 
+      chassis.driveDistanceWithOdom(28.5);                                //27
       toggleDropDown(); 
       mainIntake.stop();
       colorSort.stop();
@@ -614,7 +614,7 @@ void Auton_1()
 
 
     //Into bottom goal
-      chassis.turnToAngle(222); //224
+      chassis.turnToAngle(225); //224                                //222
       chassis.driveDistanceWithOdomTime(12, 1000, 6);
       chassis.driveDistanceWithOdomTime(-2, 1000); 
 
@@ -787,7 +787,7 @@ void Auton_3()
       chassis.turnToAngleTime(270,1000,10);
       
       //toggleLift();//up
-      chassis.movetopos(-54,47,270);//-58
+      chassis.movetoposTime(-54,47,270,1000);//-58
       
       chassis.driveDistanceWithOdomTime(6, 700); //bc it drives into match loader
       
@@ -806,7 +806,7 @@ void Auton_3()
 
     //turns to discard the 3 blues
       chassis.driveDistanceWithOdomTime(-6 ,1000);
-      chassis.turnToAngleTime(45,1000,10);//320,0
+      chassis.turnToAngleTime(45,1200,10);//320,0
       mainIntake.spin(reverse);
       bottomStage.spin(reverse);
       wait(0.5, sec); //1.5 to long, 1 to long
@@ -831,7 +831,7 @@ void Auton_3()
 
     //Moves to long goal
       chassis.driveDistanceWithOdomTime(-6,1000);
-      chassis.turnToAngle(87); //90 off right, 85 may have missed alligners
+      chassis.turnToAngle(84); //90 off right, 85 may have missed alligners                  //87
       matchLoad.set(false);
       justIntake.spin(fwd);
       toggleLift();//up
@@ -858,22 +858,27 @@ void Auton_3()
 
 
 
+
+      toggleIntakeFlap();
+
+
+
       
-    //Park Ending
-      chassis.driveDistanceWithOdomTime(-6,1000);
-      toggleIntakeFlap();//close
-      toggleLift();//down
+    // //Park Ending
+    //   chassis.driveDistanceWithOdomTime(-6,1000);
+    //   toggleIntakeFlap();//close
+    //   toggleLift();//down
 
 
-      chassis.turnToAngleTime(247, 1000, 10);
-      chassis.driveDistanceWithOdomTime(18,1000);
-      chassis.setDriveMaxVoltage(10);//6 doesnt quite allign with wall
-      chassis.movetopos(-60,23,175); //-62,28,180
-      wait(.5, sec); // need to block
-      chassis.driveDistanceWithOdomTime(-10,1000); //8, 12 can be more
-      chassis.turnToAngleTime(187, 1000, 10);//185
-      chassis.setDriveMaxVoltage(12); 
-      chassis.driveDistance(70); //60 works
+    //   chassis.turnToAngleTime(247, 1000, 10);
+    //   chassis.driveDistanceWithOdomTime(18,1000);
+    //   chassis.setDriveMaxVoltage(6);//6 doesnt quite allign with wall       //10
+    //   chassis.movetoposTime(-60,23,180,1000); //-62,28,180                    //175
+    //   //wait(.5, sec); // need to block
+    //   chassis.driveDistanceWithOdomTime(-10,1000); //8, 12 can be more
+    //   chassis.turnToAngleTime(187, 1000, 10);//185
+    //   chassis.setDriveMaxVoltage(12); 
+    //   chassis.driveDistance(70); //60 works
       //chassis.driveMotors(12,12); 
       // wait(2.5, sec);
       // chassis.driveMotors(0,0);
