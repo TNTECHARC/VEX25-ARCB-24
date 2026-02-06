@@ -1508,7 +1508,26 @@ void Auton_7()
 /// @brief Auton Slot 8 - Write code for route within this function.
 void Auton_8()
 {
-    //Brain.Screen.print("Auton 8 Running");
+    mainIntake.setVelocity(100, percent);
+    colorSort.setVelocity(100, percent);
+    topStage.setVelocity(100, percent);
+    bottomStage.setVelocity(100, percent);
+    chassis.setPosition(0,0,0);
+    chassis.setDriveMaxVoltage(12);
+    chassis.setTurnMaxVoltage(12);
+    
+    // chassis.movetopos(24,24, 90);
+    // chassis.movetopos(0,0, 270);
+    // chassis.turnToAngle(0);
+    chassis.moveToTarget(24, 24, 0);
+    wait(2, sec);
+    chassis.moveToTarget(0, 48, 0);
+    wait(2, sec);
+    chassis.moveToTarget(0,0,0);
+    wait(2, sec);
+
+    //chassis.turnToPosition(0, 24);
+    wait(5000, sec);
 
 }
 
