@@ -116,8 +116,8 @@ void preAuton()
 
   vex::color colors[8] = {vex::color::red, vex::color::red, vex::color::red, vex::color::red, 
                           vex::color::blue, vex::color::blue, vex::color::blue, vex::color::blue};
-  std::string names[8] = {"NONE", "UCF", "1mSkill", "TopDef3", 
-                          "Park5", "2xTop7", "TopMid7", "LowMid7"};
+  std::string names[8] = {"WinScrp", "WinBlk", "Fast4", "Speed10", 
+                          "Void", "Void", "Void", "Void"};
   Button buttons[9];
   createAutonButtons(colors, names, buttons);
   buttons[0].setChosen(true);
@@ -631,9 +631,9 @@ void longToMatch(){
 //void match loader to goal
 
 void longGoalWingPush(){
-  chassis.turnToAngle(315);
+  chassis.turnToAngle(225);
   chassis.driveDistance(-5);
-  chassis.turnToAngle(275);
+  chassis.turnToAngle(265);
   chassis.driveDistance(28);
   // chassis.driveDistance(-10);
   // chassis.turnToAngle(215);
@@ -670,15 +670,14 @@ int unjamColorSortIntake(){
 }
 
 
-//Auton Route Functions
-/// @brief Auton Slot 1 - Write code for route within this function.
-void Auton_1() //EMPTY (UPDATE WHEN CHANGED)
-{   
-  chassis.setSCurveConstants(60.0f, 120.0f, 600.0f);
+
+/*----------------Important Info-------------------
+
+chassis.setSCurveConstants(60.0f, 120.0f, 600.0f);
   chassis.setDriveKff(12.0f / 78.9891f *.2f);
   chassis.setDriveKs(1.0f);
   chassis.setStallDetection(0.05f, 500.0f);
-  chassis.setPosition(0,0,0);
+  chassis.setPosition(0,0,180);
 
   //BELOW 25 DEG
   chassis.setTurnConstants(1.6, 0.0, 4.5, .75, 200, 1500);
@@ -686,8 +685,24 @@ void Auton_1() //EMPTY (UPDATE WHEN CHANGED)
   //ABOVE 25 DEG
   chassis.setTurnConstants(0.95, 0.0, 5.0, 1.0, 200, 1500);
 
-  
 
+--------------------------------------------------*/
+
+
+//Auton Route Functions
+/// @brief Auton Slot 1 - Write code for route within this function.
+void Auton_1() //Win Point Scrape
+{   
+  chassis.setSCurveConstants(60.0f, 120.0f, 600.0f);
+  chassis.setDriveKff(12.0f / 78.9891f *.2f);
+  chassis.setDriveKs(1.0f);
+  chassis.setStallDetection(0.05f, 500.0f);
+  chassis.setPosition(0,0,180);
+  //above 25 deg
+  chassis.setTurnConstants(0.95, 0.0, 5.0, 1.0, 200, 1500);
+
+
+  
     
 
 }
@@ -706,7 +721,7 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver)
   chassis.setDriveKff(12.0f / 78.9891f *.2f);
   chassis.setDriveKs(1.0f);
   chassis.setStallDetection(0.05f, 300.0f);
-  chassis.setPosition(0,0,0);
+  chassis.setPosition(0,0,180);
 
 
 
@@ -754,7 +769,7 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver)
 }
 
 /// @brief Auton Slot 3 - Write code for route within this function.
-void Auton_3() //FAST 4 (not modified for silver)
+void Auton_3() //FAST 4 
 {   
   Brain.resetTimer();
 
@@ -767,11 +782,11 @@ void Auton_3() //FAST 4 (not modified for silver)
   chassis.setDriveKff(12.0f / 78.9891f *.2f);
   chassis.setDriveKs(1.0f);
   chassis.setStallDetection(0.05f, 300.0f);
-  chassis.setPosition(0,0,0);
+  chassis.setPosition(0,0,180);
 
 
   chassis.driveDistance(42); //41
-  chassis.turnToAngle(269);
+  chassis.turnToAngle(270);
   matchLoad.set(true);
   intake.spin(forward, 100, pct);
   colorSortIntake.spin(forward, 100, percent);
@@ -806,7 +821,7 @@ void Auton_3() //FAST 4 (not modified for silver)
 }
 
 /// @brief Auton Slot 4 - Write code for route within this function.
-void Auton_4() // Speed 10 (not modified for silver)
+void Auton_4() // Speed 10 
 {  
   Brain.resetTimer();
 
@@ -819,7 +834,7 @@ void Auton_4() // Speed 10 (not modified for silver)
   chassis.setDriveKff(12.0f / 78.9891f *.2f);
   chassis.setDriveKs(1.0f);
   chassis.setStallDetection(0.05f, 300.0f);
-  chassis.setPosition(0,0,0);
+  chassis.setPosition(0,0,180);
 
 
   chassis.driveDistance(42); //41
@@ -884,24 +899,24 @@ void Auton_4() // Speed 10 (not modified for silver)
 }
 
 /// @brief Auton Slot 5 - Write code for route within this function.
-void Auton_5() //PARK
+void Auton_5() 
 {
 
 }
 
 /// @brief Auton Slot 6 - Write code for route within this function.
-void Auton_6() //DOUBLE LOAD TOP
+void Auton_6() 
 {
  
 }
 
 /// @brief Auton Slot 7 - Write code for route within this function.
-void Auton_7() //SCORES TOP MIDDLE REAL
+void Auton_7() 
 {
 }
 
 /// @brief Auton Slot 8 - Write code for route within this function.
-void Auton_8() //SCORES LOW MIDDLE REAL
+void Auton_8() 
 {
 
 }
