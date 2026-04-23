@@ -197,7 +197,7 @@ void autonomous()
   // }
 
   wait(100, msec);
-  Auton_2();
+  Auton_1();
   //Auton_1();
 
   //setDriveTrainConstants();
@@ -620,6 +620,7 @@ int unprime(){
     clockRotationSensor.resetPosition();
     return 0;
 }
+
 void longToMatch(){
   matchLoad.set(true);
   intake.spin(reverse, 50, pct);
@@ -678,22 +679,21 @@ void Auton_1() //EMPTY (UPDATE WHEN CHANGED)
   chassis.setDriveKs(1.0f);
   chassis.setStallDetection(0.05f, 500.0f);
   chassis.setPosition(0,0,0);
-  chassis.turnToAngle(0);
-  chassis.turnToAngle(5);
-  chassis.turnToAngle(0);
-  chassis.turnToAngle(90);
-  chassis.turnToAngle(0);
-  // chassis.driveDistance(24);
-  //longGoalWingPush();
+
+  //BELOW 25 DEG
+  chassis.setTurnConstants(1.6, 0.0, 4.5, .75, 200, 1500);
+
+  //ABOVE 25 DEG
+  chassis.setTurnConstants(0.95, 0.0, 5.0, 1.0, 200, 1500);
+
   
 
-  std::cout << chassis.chassisOdometry.getXPosition() << ", " << chassis.chassisOdometry.getYPosition() << std::endl;
     
 
 }
 
 /// @brief Auton Slot 2 - Write code for route within this function.
-void Auton_2() // WIN POINT BLOCK
+void Auton_2() // WIN POINT BLOCK (not modified for silver)
 {   
   Brain.resetTimer();
 
@@ -754,7 +754,7 @@ void Auton_2() // WIN POINT BLOCK
 }
 
 /// @brief Auton Slot 3 - Write code for route within this function.
-void Auton_3() //FAST 4
+void Auton_3() //FAST 4 (not modified for silver)
 {   
   Brain.resetTimer();
 
@@ -771,7 +771,7 @@ void Auton_3() //FAST 4
 
 
   chassis.driveDistance(42); //41
-  chassis.turnToAngle(270);
+  chassis.turnToAngle(269);
   matchLoad.set(true);
   intake.spin(forward, 100, pct);
   colorSortIntake.spin(forward, 100, percent);
@@ -806,7 +806,7 @@ void Auton_3() //FAST 4
 }
 
 /// @brief Auton Slot 4 - Write code for route within this function.
-void Auton_4() // Speed 10
+void Auton_4() // Speed 10 (not modified for silver)
 {  
   Brain.resetTimer();
 
@@ -886,82 +886,7 @@ void Auton_4() // Speed 10
 /// @brief Auton Slot 5 - Write code for route within this function.
 void Auton_5() //PARK
 {
-  Brain.resetTimer();
-  clockRotationSensor.resetPosition();
 
-  static vex::thread autonColor = vex::thread(autonColorSort);
-  autonColorSorting = true;
-  int loopTime = 0;
-  chassis.setDriveMaxVoltage(12);
-
-  chassis.setSCurveConstants(60.0f, 120.0f, 400.0f);
-  chassis.setDriveKff(12.0f / 78.9891f *.2f);
-  chassis.setDriveKs(1.0f);
-  chassis.setStallDetection(0.05f, 300.0f);
-  chassis.setPosition(0,0,0);
-
-  chassis.driveDistance(42); //41
-  chassis.turnToAngle(270);
-  matchLoad.set(true);
-  intake.spin(forward, 100, pct);
-  colorSortIntake.spin(forward, 100, percent);
-  chassis.driveDistance(-12);
-
-  wait(1250, msec);
-  matchLoad.set(false);
-  topIntake.spin(forward, 25, percent);
-
-  unjamActive = true;
-  vex::thread unjam1(unjamColorSortIntake);
-  unjamActive = false;
-  intake.spin(forward, 100, pct);
-  colorSortIntake.spin(forward, 100, percent);
-
-  chassis.driveDistance(28);
-  intakeFlap.set(true);
-  autonFireClockNoUnprime(30);
-  vex::thread unprimeThread1(unprime);
-  intakeFlap.set(false);
-
-  matchLoad.set(true);
-  topIntake.spin(forward, 100, percent);
-  chassis.driveDistance(-20);
-
-  intakeFlap.set(true);
-  autonFireClockNoUnprime(100);
-  vex::thread unprimeThread4(unprime);
-
-  chassis.driveDistance(-8);
-  intakeFlap.set(false);
-
-  wait(500, msec);
-  bottomIntake.spin(reverse, 15, percent);
-  wait(1000, msec);
-  bottomIntake.spin(forward, 100, percent);
-
-  unjamActive = true;
-  vex::thread unjam2(unjamColorSortIntake);
-  unjamActive = false;
-  intake.spin(forward, 100, pct);
-  colorSortIntake.spin(forward, 100, percent);
-
-  chassis.driveDistance(28);  
-  intakeFlap.set(true);
-  autonFireClockNoUnprime(30);
-  vex::thread unprimeThread2(unprime);
-
-  wait(1000, msec);
-  autonFireClockNoUnprime(20);
-  vex::thread unprimeThread3(unprime);
-
-  chassis.driveDistance(-5);
-  intakeFlap.set(false);
-  chassis.driveDistance(5);
-  intake.stop();
-  colorSortIntake.stop();
-
-  double time = Brain.timer(seconds);
-  std::cout << "TIME: " << time << " seconds\n";
 }
 
 /// @brief Auton Slot 6 - Write code for route within this function.
