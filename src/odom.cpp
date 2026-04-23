@@ -8,7 +8,8 @@
 /// @param forwardRightRotationDistance Distance the forward right wheel is from the center (in)
 /// @param forwardLeftRotationDistance Distance the forward left wheel is from the center (in)
 /// @param lateralRotationDistance Distance the lateral wheel is from the center (in)
-Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance){
+Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, float lateralWheelDiameter, 
+           float forwardRightRotationDistance, float forwardLeftRotationDistance, float lateralRotationDistance){
     this->forwardRightWheelDiameter = forwardRightWheelDiameter;
     this->forwardLeftWheelDiameter = forwardLeftWheelDiameter;
     this->lateralWheelDiameter = lateralWheelDiameter;
@@ -16,7 +17,7 @@ Odom::Odom(float forwardRightWheelDiameter, float forwardLeftWheelDiameter, floa
     this->forwardLeftRotationDistance = forwardLeftRotationDistance;
     this->lateralRotationDistance = lateralRotationDistance;     
 
-}
+} 
 
 /// @brief Constructor for odometry with one forward rotation sensor
 /// @param forwardWheelDiameter Forward rotation wheel diameter 
@@ -62,6 +63,10 @@ float Odom::getLateralDegrees(){ return lateralDegrees; }
 
 //Mutators
 void Odom::setPosition(float xPosition, float yPosition, float heading){
+    this->prevX = this->xPosition;
+    this->prevY = this->yPosition;
+    this->prevHeading = this->heading;
+    
     this->xPosition = xPosition;
     this->yPosition = yPosition;
     this->heading = heading;

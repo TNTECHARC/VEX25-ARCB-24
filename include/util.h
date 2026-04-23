@@ -4,7 +4,6 @@
 #include <cmath>
 #include <fstream>
 
-
 /// @brief Clamps the input in between the min and max value
 /// @param input The value being clamped
 /// @param min The minimum value that the output can be
@@ -22,9 +21,19 @@ float degToRad(float degrees);
 
 float inTermsOfNegative180To180(float angle);
 
-void writeToCard(std::string filename, std::string text);
-void writeToCard(std::string filename, float number);
 void writeCommaToCard(std::string filename);
 void writeNewLineToCard(std::string filename);
 
+template <typename T>
+void writeToCard(std::string filename, T input);
+
 enum ODOM_TYPE{NO_ODOM=0, HORIZONTAL_AND_VERTICAL=1, TWO_VERTICAL=2, TWO_AT_45=3};
+enum COLORS{RED = 0, BLUE = 1};
+
+struct SPGuard{
+    bool& flag;
+    SPGuard(bool& f) : flag(f) {}
+    ~SPGuard(){
+        this->flag = false;
+    }
+};
