@@ -197,7 +197,7 @@ void autonomous()
   // }
 
   wait(100, msec);
-  Auton_4();
+  // Auton_4();
   //Auton_1();
   Auton_1();
   // Auton_2();
@@ -565,7 +565,7 @@ void setDriveTrainConstants()
     chassis.setDriveConstants(
         1.0,  // Kp
         0.0,  // Ki
-        14.0,  // Kd
+        10.0,  // Kd
         0.5,  // Settle Error
         200,  // Time to Settle
         5000  // End Time
@@ -623,21 +623,17 @@ int unprime(){
     return 0;
 }
 
-void longToMatch(){
-  matchLoad.set(true);
-  intake.spin(reverse, 50, pct);
-  colorSortIntake.spin(forward, 100, percent);
-  chassis.driveDistance(-27);
-}
 
 //void match loader to goal
 
 void longGoalWingPush(){
   chassis.turnToAngle(225);
-  chassis.driveDistance(-6);//-5
+  chassis.driveDistance(-4.5);//-4.5
   chassis.turnToAngle(265);
   chassis.driveDistance(28);
 }
+
+
 
 int autonColorSort(){
   int blueMinHue = 200;
@@ -654,7 +650,7 @@ int autonColorSort(){
   return 0;
 }
 
-int unjamColorSortIntake(){
+int unjamColorSortIntake(){ // this will be deleted and replaced by colorUnjam
   while(unjamActive){
     colorSortIntake.spin(reverse, 100, percent);
     bottomIntake.spin(reverse, 100, percent);
@@ -664,6 +660,23 @@ int unjamColorSortIntake(){
   }
   return 1;
 }
+
+int colorUnjam(){ // from Keegan, will add later
+  while(1){
+    if(fabs(colorSortIntake.velocity(rpm)) <= 5 && unjamActive){
+      colorSortIntake.spin(reverse, 100, percent);
+      std::cout << "UNJAMMED SO HARD" << std::endl;
+      wait(250, msec);
+      colorSortIntake.spin(forward, 100, percent);
+    } else {
+      wait(20, msec);
+    }
+  }
+  return 0;
+}
+
+// static vex::thread colorIsSpinningUnjam = vex::thread(colorUnjam);
+// unjamActive = true;
 
 
 
@@ -683,24 +696,27 @@ chassis.setSCurveConstants(60.0f, 120.0f, 600.0f);
 
 
 --------------------------------------------------*/
-
+// kp1, ki
 
 //Auton Route Functions
 /// @brief Auton Slot 1 - Write code for route within this function.
-void Auton_1() //Win Point Scrape
+void Auton_1() //Win Point Scrape. 3-4 in top mid, scrapes and goes for 6 in long goal
 {   
   Brain.resetTimer();
 
+  bool flapState = false;
+  
   static vex::thread autonColor = vex::thread(autonColorSort);
   autonColorSorting = true;
   int loopTime = 0;
   chassis.setDriveMaxVoltage(12);
+  chassis.setTurnMaxVoltage(12);
   setDriveTrainConstants();
 
-  chassis.setSCurveConstants(60.0f, 120.0f, 400.0f);
+  chassis.setSCurveConstants(120.0f, 240.0f, 1200.0f);
   chassis.setDriveKff(12.0f / 78.9891f *.2f);
   chassis.setDriveKs(1.0f);
-  chassis.setStallDetection(0.05f, 300.0f);
+  chassis.setStallDetection(0.05f, 200.0f);
   chassis.setPosition(0,0,180);
   midGoalBlocking.set(false);
 
@@ -719,11 +735,12 @@ void Auton_1() //Win Point Scrape
   while(loopTime <= 1000){
     if(autonLastSeen == !teamColor){
       vex::thread primeThread(prime);
+      wait(.2, sec);
       break;
     }
 
-    loopTime += 5;
-    wait(7, msec); // 5
+    loopTime += 6; //5
+    wait(10, msec); //5
   }
 
   loopTime = 0;
@@ -751,9 +768,71 @@ void Auton_1() //Win Point Scrape
   wait(250, msec); // 500
 
   // new
-  chassis.driveDistance(-30);
-  chassis.turnToAngle(260);
+  intake.spin(reverse, 100, pct); // AHHHHHHH
+  colorSortIntake.spin(reverse, 100, pct);
+
+  intakeFlap.set(false);
+  chassis.driveDistance(-43.5); //-45
+  chassis.turnToAngle(270);
+  matchLoad.set(true);
+  intake.spin(forward, 100, pct);
+  colorSortIntake.spin(forward, 100, percent);
+  chassis.driveDistance(-15); // -12
+
+  autonLastSeen = teamColor;
+  while(loopTime <= 1000){
+    if(autonLastSeen == !teamColor){
+      vex::thread primeThread(prime);
+      wait(.2, sec);
+      break;
+    }
+
+    loopTime += 5;
+    wait(7, msec); // 5
+  }
+
+  loopTime = 0;
+  matchLoad.set(false);
+  intake.stop();
+  colorSortIntake.stop();
+  matchLoad.set(false);
+
+  intake.spin(forward, 100, pct);
+  colorSortIntake.spin(forward, 50, pct);
+  intakeLift.set(true);
   
+  intake.stop();
+  colorSortIntake.stop();
+
+  toggleWings(); // up
+  chassis.turnToAngle(285); //283
+  chassis.driveDistance(29.5); // 29
+  chassis.turnToAngle(250);
+  chassis.driveDistance(14); // 19
+
+  toggleWings(); // down
+  chassis.turnToAngle(270);
+
+
+  
+
+  chassis.driveDistance(-33);
+  chassis.turnToAngle(210); // 225
+  chassis.driveDistance(12);
+
+  chassis.turnToAngle(270);
+  chassis.driveDistance(10);
+
+  intakeFlap.set(true);
+  
+  autonFireClock(30);
+
+  intake.spin(forward, 100, percent);
+  colorSortIntake.spin(forward, 100, percent);
+  wait(1000, msec);
+
+  autonFireClockNoUnprime(30);
+  vex::thread unprimeThread(unprime);
 
 
 
@@ -798,11 +877,12 @@ void Auton_2() // WIN POINT BLOCK  to top mid and goes to the other side and blo
   while(loopTime <= 1000){
     if(autonLastSeen == !teamColor){
       vex::thread primeThread(prime);
+      wait(0.2, sec);
       break;
     }
 
-    loopTime += 5;
-    wait(5, msec);
+    loopTime += 6; //5
+    wait(6, msec);
   }
 
   loopTime = 0;
@@ -824,7 +904,7 @@ void Auton_2() // WIN POINT BLOCK  to top mid and goes to the other side and blo
   // vex::thread unprimeThread(unprime);
   // bottomIntake.spin(forward, 25, pct);
   // colorSortIntake.spin(forward, 15, pct);
-  intakeFlap.set(true); // open
+  intakeFlap.set(true); // 
   chassis.driveDistance(1.5);
   autonFireClock(16); //20
   wait(250, msec); // 500
