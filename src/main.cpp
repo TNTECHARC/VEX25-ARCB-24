@@ -718,12 +718,14 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver) to top mid and goes 
   autonColorSorting = true;
   int loopTime = 0;
   chassis.setDriveMaxVoltage(12);
+  setDriveTrainConstants();
 
   chassis.setSCurveConstants(60.0f, 120.0f, 400.0f);
   chassis.setDriveKff(12.0f / 78.9891f *.2f);
   chassis.setDriveKs(1.0f);
   chassis.setStallDetection(0.05f, 300.0f);
   chassis.setPosition(0,0,180);
+  midGoalBlocking.set(false);
 
 
 
@@ -754,19 +756,35 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver) to top mid and goes 
   colorSortIntake.stop();
 
   chassis.driveDistance(11);
-  chassis.turnToAngle(316); // 315
+  chassis.turnToAngle(315); // 315
   intake.spin(forward, 100, pct);
   colorSortIntake.spin(forward, 50, pct);
-  chassis.driveDistance(47); // 49
+  chassis.driveDistance(45); // 44.5
   intake.stop();
-
+  vex::thread topIntakeThread([]{
+      topIntake.spin(fwd, 100, percent);
+      wait(300, msec);
+    });
   // vex::thread unprimeThread(unprime);
-  // topIntake.spin(forward, 100, pct);
   // bottomIntake.spin(forward, 25, pct);
   // colorSortIntake.spin(forward, 15, pct);
   intakeFlap.set(true); // open
-  autonFireClock(18); //20 
-  wait(500, msec);
+  chassis.driveDistance(1.5);
+  autonFireClock(16); //20
+  wait(250, msec); // 500
+
+
+  // new
+  chassis.driveDistance(-6);
+  intakeLift.set(true);
+  chassis.turnToAngle(270);
+  chassis.driveDistance(9);
+
+  chassis.turnToAngle(315);
+  chassis.driveDistance(10);
+  midGoalBlocking.set(true);
+
+
 
   
 
