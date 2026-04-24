@@ -199,6 +199,8 @@ void autonomous()
   wait(100, msec);
   Auton_4();
   //Auton_1();
+  Auton_1();
+  // Auton_2();
 
   //setDriveTrainConstants();
 
@@ -687,29 +689,25 @@ chassis.setSCurveConstants(60.0f, 120.0f, 600.0f);
 /// @brief Auton Slot 1 - Write code for route within this function.
 void Auton_1() //Win Point Scrape
 {   
-  chassis.setSCurveConstants(60.0f, 120.0f, 600.0f);
-  chassis.setDriveKff(12.0f / 78.9891f *.2f);
-  chassis.setDriveKs(1.0f);
-  chassis.setStallDetection(0.05f, 500.0f);
-  chassis.setPosition(0,0,180);
-
   Brain.resetTimer();
 
   static vex::thread autonColor = vex::thread(autonColorSort);
   autonColorSorting = true;
   int loopTime = 0;
   chassis.setDriveMaxVoltage(12);
+  setDriveTrainConstants();
 
   chassis.setSCurveConstants(60.0f, 120.0f, 400.0f);
   chassis.setDriveKff(12.0f / 78.9891f *.2f);
   chassis.setDriveKs(1.0f);
   chassis.setStallDetection(0.05f, 300.0f);
   chassis.setPosition(0,0,180);
+  midGoalBlocking.set(false);
 
 
 
-  double time = Brain.timer(seconds);
-  std::cout << "TIME: " << time << " seconds\n";
+  // double time = Brain.timer(seconds);
+  // std::cout << "TIME: " << time << " seconds\n";
 
   chassis.driveDistance(40); //41
   chassis.turnToAngle(270);
@@ -725,7 +723,7 @@ void Auton_1() //Win Point Scrape
     }
 
     loopTime += 5;
-    wait(5, msec);
+    wait(7, msec); // 5
   }
 
   loopTime = 0;
@@ -735,26 +733,40 @@ void Auton_1() //Win Point Scrape
   colorSortIntake.stop();
 
   chassis.driveDistance(11);
-  chassis.turnToAngle(316); // 315
+  chassis.turnToAngle(315); // 315
   intake.spin(forward, 100, pct);
   colorSortIntake.spin(forward, 50, pct);
-  chassis.driveDistance(47); // 49
+  chassis.driveDistance(45); // 44.5
   intake.stop();
-
+  vex::thread topIntakeThread([]{
+      topIntake.spin(fwd, 100, percent);
+      wait(300, msec);
+    });
   // vex::thread unprimeThread(unprime);
-  // topIntake.spin(forward, 100, pct);
   // bottomIntake.spin(forward, 25, pct);
   // colorSortIntake.spin(forward, 15, pct);
   intakeFlap.set(true); // open
-  autonFireClock(18); //20 
-  wait(500, msec);
+  chassis.driveDistance(1.5);
+  autonFireClock(16); //20
+  wait(250, msec); // 500
 
+  // new
+  chassis.driveDistance(-30);
+  chassis.turnToAngle(260);
   
+
+
+
+  double time = Brain.timer(seconds);
+  std::cout << "TIME: " << time << " seconds\n";
+
+
+
 
 }
 
 /// @brief Auton Slot 2 - Write code for route within this function.
-void Auton_2() // WIN POINT BLOCK (not modified for silver) to top mid and goes to the other side and blocks
+void Auton_2() // WIN POINT BLOCK  to top mid and goes to the other side and blocks
 {   
   Brain.resetTimer();
 
@@ -773,8 +785,8 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver) to top mid and goes 
 
 
 
-  double time = Brain.timer(seconds);
-  std::cout << "TIME: " << time << " seconds\n";
+  // double time = Brain.timer(seconds);
+  // std::cout << "TIME: " << time << " seconds\n";
 
   chassis.driveDistance(40); //41
   chassis.turnToAngle(270);
@@ -829,7 +841,8 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver) to top mid and goes 
   midGoalBlocking.set(true);
 
 
-
+  double time = Brain.timer(seconds);
+  std::cout << "TIME: " << time << " seconds\n";
   
 
   
@@ -1037,8 +1050,8 @@ void Auton_5() // Load long 6
 
 /// @brief Auton Slot 6 - Write code for route within this function.
 void Auton_6() 
-{
- 
+ {   
+  
 }
 
 /// @brief Auton Slot 7 - Write code for route within this function.
