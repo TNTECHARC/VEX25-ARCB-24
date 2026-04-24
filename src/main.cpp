@@ -197,8 +197,8 @@ void autonomous()
   // }
 
   wait(100, msec);
-  Auton_1();
-  //Auton_1();
+  // Auton_1();
+  Auton_2();
 
   //setDriveTrainConstants();
 
@@ -451,6 +451,8 @@ void autonFireClock(int fireSpeed = 100){
   clockRotationSensor.resetPosition();
   catapult.stop();
 }
+
+
 
 /// @brief Non-threaded function to fire the clock in autonomous
 void autonFireClockNoUnprime(int fireSpeed = 100){
@@ -708,7 +710,7 @@ void Auton_1() //Win Point Scrape
 }
 
 /// @brief Auton Slot 2 - Write code for route within this function.
-void Auton_2() // WIN POINT BLOCK (not modified for silver)
+void Auton_2() // WIN POINT BLOCK (not modified for silver) to top mid and goes to the other side and blocks
 {   
   Brain.resetTimer();
 
@@ -728,12 +730,12 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver)
   double time = Brain.timer(seconds);
   std::cout << "TIME: " << time << " seconds\n";
 
-  chassis.driveDistance(42); //41
+  chassis.driveDistance(40); //41
   chassis.turnToAngle(270);
   matchLoad.set(true);
   intake.spin(forward, 100, pct);
   colorSortIntake.spin(forward, 100, percent);
-  chassis.driveDistance(-12);
+  chassis.driveDistance(-12); // -12
 
   while(loopTime <= 1000){
     if(autonLastSeen == !teamColor){
@@ -751,21 +753,24 @@ void Auton_2() // WIN POINT BLOCK (not modified for silver)
   intake.stop();
   colorSortIntake.stop();
 
-  chassis.driveDistance(12);
-  chassis.turnToAngle(225);
+  chassis.driveDistance(11);
+  chassis.turnToAngle(316); // 315
   intake.spin(forward, 100, pct);
-  colorSortIntake.spin(reverse, 50, pct);
-  chassis.driveDistance(49);
+  colorSortIntake.spin(forward, 50, pct);
+  chassis.driveDistance(47); // 49
   intake.stop();
 
-  vex::thread unprimeThread(unprime);
-  topIntake.spin(reverse, 100, pct);
-  bottomIntake.spin(reverse, 25, pct);
-  colorSortIntake.spin(forward, 15, pct);
+  // vex::thread unprimeThread(unprime);
+  // topIntake.spin(forward, 100, pct);
+  // bottomIntake.spin(forward, 25, pct);
+  // colorSortIntake.spin(forward, 15, pct);
+  intakeFlap.set(true); // open
+  autonFireClock(18); //20 
   wait(500, msec);
 
   
 
+  
 }
 
 /// @brief Auton Slot 3 - Write code for route within this function.
