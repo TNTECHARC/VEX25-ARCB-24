@@ -200,7 +200,7 @@ void autonomous()
 
   wait(100, msec);
   // Auton_4();
-  //Auton_1();
+  // Auton_1();
   //Auton_8();
   // Auton_2();
 
@@ -236,6 +236,7 @@ void autonomous()
     default:
       break;
   }
+      
 }
 
 /// @brief Runs during the UserControl section of the competition
@@ -252,6 +253,9 @@ void usercontrol()
   bool flapState = false;
   int lastSeen = teamColor;
   int timeSinceSeenWrong = 0;
+  
+  midGoalBlocking.set(false);
+
 
   static vex::thread fireThread = vex::thread(fireClock);
 
@@ -725,7 +729,7 @@ void Auton_1() //Win Point Scrape. 3-4 in top mid, scrapes and goes for 6 in lon
   // double time = Brain.timer(seconds);
   // std::cout << "TIME: " << time << " seconds\n";
 
-  chassis.driveDistance(40); //41
+  chassis.driveDistance(38); //40
   chassis.turnToAngle(270);
   matchLoad.set(true);
   intake.spin(forward, 100, pct);
@@ -750,7 +754,7 @@ void Auton_1() //Win Point Scrape. 3-4 in top mid, scrapes and goes for 6 in lon
   colorSortIntake.stop();
 
   chassis.driveDistance(11);
-  chassis.turnToAngle(315); // 315
+  chassis.turnToAngle(314); // 315
   intake.spin(forward, 100, pct);
   colorSortIntake.spin(forward, 50, pct);
   chassis.driveDistance(45); // 44.5
@@ -765,19 +769,20 @@ void Auton_1() //Win Point Scrape. 3-4 in top mid, scrapes and goes for 6 in lon
   intakeFlap.set(true); // open
   chassis.driveDistance(1.5);
   autonFireClock(16); //20
-  wait(250, msec); // 500
+  wait(500, msec); // 250
 
   // new
   intake.spin(reverse, 100, pct); // AHHHHHHH
   colorSortIntake.spin(reverse, 100, pct);
 
+  
+  chassis.driveDistance(-46); //-43.5
   intakeFlap.set(false);
-  chassis.driveDistance(-43.5); //-45
   chassis.turnToAngle(270);
   matchLoad.set(true);
   intake.spin(forward, 100, pct);
   colorSortIntake.spin(forward, 100, percent);
-  chassis.driveDistance(-15); // -12
+  chassis.driveDistance(-15); // -15-
 
   autonLastSeen = teamColor;
   while(loopTime <= 1000){
@@ -805,10 +810,10 @@ void Auton_1() //Win Point Scrape. 3-4 in top mid, scrapes and goes for 6 in lon
   colorSortIntake.stop();
 
   toggleWings(); // up
-  chassis.turnToAngle(285); //283
-  chassis.driveDistance(29.5); // 29
+  chassis.turnToAngle(287); //283 286
+  chassis.driveDistance(32); // 29.5
   chassis.turnToAngle(250);
-  chassis.driveDistance(14); // 19
+  chassis.driveDistance(12); // 19 //13
 
   toggleWings(); // down
   chassis.turnToAngle(270);
@@ -825,7 +830,7 @@ void Auton_1() //Win Point Scrape. 3-4 in top mid, scrapes and goes for 6 in lon
 
   intakeFlap.set(true);
   
-  autonFireClock(30);
+  autonFireClock(40);//30
 
   intake.spin(forward, 100, percent);
   colorSortIntake.spin(forward, 100, percent);
@@ -916,7 +921,7 @@ void Auton_2() // WIN POINT BLOCK  to top mid and goes to the other side and blo
   chassis.turnToAngle(270);
   chassis.driveDistance(9);
 
-  chassis.turnToAngle(315);
+  chassis.turnToAngle(314);
   chassis.driveDistance(10);
   midGoalBlocking.set(true);
 
