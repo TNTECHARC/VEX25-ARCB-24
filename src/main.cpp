@@ -44,6 +44,7 @@ using namespace vex;
   bool autonColorSorting = false;
   bool autonLastSeen;
   bool unjamActive = false;
+  bool wingState = false;
 
 
   // Define Values for the Chassis here:
@@ -87,6 +88,7 @@ void toggleIntakeFlap();
 void toggleFrontIntake();
 void toggleColorSort();
 void toggleWings();
+void toggleWingsDown(); 
 int fireClock();
 void splitPrimeClock();
 void splitReleaseClock();
@@ -300,7 +302,7 @@ void usercontrol()
           timeSinceSeenWrong = 0;
       }
 
-      if(Controller1.ButtonR1.pressing()){
+      if(Controller1.ButtonR1.pressing() && !Controller1.ButtonR2.pressing()){ // 
         if(isColorSorting)
           topIntake.spin(forward, 50, percent);
         else
@@ -313,7 +315,7 @@ void usercontrol()
 
           colorSortIntake.spin(reverse);
         }
-      }else if(Controller1.ButtonR2.pressing()){
+      }else if(Controller1.ButtonR2.pressing() && !Controller1.ButtonR1.pressing()){
         intake.spin(reverse);
         colorSortIntake.spin(forward, 10, percent);
       }else{
@@ -342,21 +344,12 @@ void usercontrol()
         intakeFlap.set(false);
       }
 
-      //TESTING
-      if(Controller1.ButtonX.pressing())
-        odomRetraction.set(true);
-      else
-        odomRetraction.set(false);
-      
-      if(Controller1.ButtonY.pressing())
+      if(Controller1.ButtonL1.pressing() && Controller1.ButtonR2.pressing()){
         frontIntake.set(true);
-      else
+      }
+      else{
         frontIntake.set(false);
-
-      if(Controller1.ButtonB.pressing())
-        midGoalBlocking.set(true);
-      else
-        midGoalBlocking.set(false);
+      }
 
     timeSinceSeenWrong += 20;
     wait(20, msec);
@@ -378,10 +371,17 @@ void toggleFrontIntake(){
 
 /// @brief Driver control function to toggle the descore mechanism
 void toggleWings(){
-  static bool wingState = false;
-  wingState = !wingState;
-  wings.set(wingState);
+  if(!Controller1.ButtonR2.pressing() || wingState == true){
+    wingState = !wingState;
+    wings.set(wingState);
+  }
 }
+
+void toggleWingsDown(){
+  wings.set(false);
+  wingState = false;
+}
+
 
 /// @brief Driver control function to fire the clock (threaded) 
 /// @return Must return an integer for threads
