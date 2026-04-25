@@ -201,12 +201,12 @@ void autonomous()
   wait(100, msec);
   // Auton_4();
   //Auton_1();
-  Auton_1();
+  //Auton_8();
   // Auton_2();
 
   //setDriveTrainConstants();
 
-/*
+
   switch (lastPressed) 
   {
     case 0:
@@ -235,7 +235,7 @@ void autonomous()
       break;
     default:
       break;
-  }*/
+  }
 }
 
 /// @brief Runs during the UserControl section of the competition
@@ -1142,7 +1142,7 @@ void Auton_7()
 /// @brief Auton Slot 8 - Write code for route within this function.
 void Auton_8() 
 {
-
+frontIntake.set(true);
 }
 
 /// @brief A thread to get information printed to console while the robot is running (either autonomous routes or drive)
